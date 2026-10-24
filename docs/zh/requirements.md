@@ -27,9 +27,9 @@
 
 1. **新建项目**：用原版 UE 新建一个项目。
 2. **复制插件**：从 [Releases](https://github.com/cuviss-open/soloAS/releases) 下载，二选一：
-   - 预编译包（推荐）：`soloAS-0.1.0-ue5.8.3-win64.7z`，解压到项目的 `Plugins/` 下即可使用。Win11 可以直接解压，Win10 需要先安装 7-Zip。
-   - 源码包：`soloAS-0.1.0-ue5.8.3-source.zip`，需要 C++ 工程和 Visual Studio 工具链，按下面“插件目录与依赖”放进 `<Project>/Plugins/`。
-   - 调试符号：`soloAS-0.1.0-ue5.8.3-win64-symbols.7z`，只在调试或查看崩溃堆栈时需要，解压覆盖到同一位置。
+   - 预编译包（推荐）：`soloAS-0.1.1-ue5.8.3-win64.7z`，解压到项目的 `Plugins/` 下即可使用。Win11 可以直接解压，Win10 需要先安装 7-Zip。
+   - 源码包：`soloAS-0.1.1-ue5.8.3-source.zip`，需要 C++ 工程和 Visual Studio 工具链，按下面“插件目录与依赖”放进 `<Project>/Plugins/`。
+   - 调试符号：`soloAS-0.1.1-ue5.8.3-win64-symbols.7z`，只在调试或查看崩溃堆栈时需要，解压覆盖到同一位置。
 3. **生成并构建**（使用源码包时）：关闭编辑器，在 `.uproject` 上右键选择 **Generate Visual Studio project files**，打开 `.sln`，构建 `<项目名>Editor`、Win64、Development，再打开 `.uproject`。
 4. **启用插件**：`Angelscript` 默认启用，`SoloASBridge` 随它自动启用；用到 GAS 或 Enhanced Input 绑定时，在编辑器的插件窗口启用 `AngelscriptGAS` 或 `AngelscriptEnhancedInput`，并按提示重启编辑器。
 5. **写代码**：之后就可以在 `<Project>/Script/` 里写 AngelScript（`.as`）代码，修改脚本不需要重启编辑器。第一个脚本见下。
