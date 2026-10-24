@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#211a14">
+<meta name="description" content="Unreal scripting, built for design. Writes like C++. Runs like C++. Feels beyond C++. All for development speed and user experience. Solo is more.">
+<title>soloAS · The Unreal scripting system built for design</title>
+<meta property="og:title" content="soloAS · The Unreal scripting system built for design">
+<meta property="og:description" content="Writes like C++. Runs like C++. Feels beyond C++. All for development speed and user experience. Solo is more.">
+<meta name="twitter:title" content="soloAS · The Unreal scripting system built for design">
+<meta name="twitter:description" content="Writes like C++. Runs like C++. Feels beyond C++. All for development speed and user experience. Solo is more.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+{{alternates}}
+<style>
+/* Font sizes: only these six levels may be used anywhere (tools/check_site.py enforces it).
+   --fs-1 12px  small print: captions, notes, legends, tiny labels
+   --fs-2 14px  small text: descriptions, navigation, table and code helper text
+   --fs-3 16px  body text
+   --fs-4 18px  h3 subheadings
+   --fs-5 22px  section headings (h2), dialog titles, wordmark
+   --fs-6 32px  page title (h1) and hero, scaled with clamp()/calc() */
+:root{--fs-1:12px;--fs-2:14px;--fs-3:16px;--fs-4:18px;--fs-5:22px;--fs-6:32px;--bg:#211a14;--ink:#30281e;--paper:#f1e9d8;--paper-muted:#655a48;--cream:#f4ecdd;--muted:#c7bba7;--gold:#d9b878;--line:rgba(217,184,120,.25);--paper-line:#cbbd9e;--serif:"Iowan Old Style","Palatino Linotype",Palatino,Baskerville,"Source Han Serif SC","Songti SC",serif;--sans:"Avenir Next","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;--mono:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:28px;-webkit-text-size-adjust:100%}
+body{margin:0;background:radial-gradient(ellipse 850px 700px at 60% 250px,#6a4d2d55,transparent),var(--bg);color:var(--cream);font:var(--fs-3)/1.7 var(--sans)}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--gold)}
+a:focus-visible{outline:2px solid var(--gold);outline-offset:5px}
+.wrap{max-width:1248px;padding:0 48px;margin:auto}
+.skip{position:absolute;top:-100px;left:16px;background:var(--paper);color:var(--ink);padding:8px 16px;z-index:5}
+.skip:focus{top:8px}
+header{border-bottom:1px solid var(--line)}
+.nav{min-height:88px;display:flex;gap:28px;align-items:center}
+.wordmark{font:var(--fs-6)/1 var(--serif);letter-spacing:-1.2px;flex:none}
+.wordmark em{font-style:normal;color:var(--gold)}
+.nav nav{margin-left:auto;display:flex;gap:26px;align-items:center;font-size:var(--fs-2)}
+.language{display:inline-flex;align-items:center;min-height:44px;min-width:44px;justify-content:center;color:var(--gold)}
+h1,h2,h3,p{margin:0;overflow-wrap:anywhere}
+h1,h2,h3{font-family:var(--serif);font-weight:400}
+h1 em{font-style:normal;color:var(--gold)}
+.hero{display:grid;grid-template-columns:1.15fr 1fr;align-items:center}
+.hero>div{min-width:0}
+.eyebrow{font:var(--fs-1) var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:24px}
+.subtitle{color:var(--muted);max-width:520px;line-height:1.8}
+.actions{display:flex;flex-wrap:wrap}
+.button{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+.code-window{margin:0;min-width:0;background:var(--paper);color:var(--ink);border:1px solid #c3aa7b;border-radius:12px;box-shadow:0 18px 70px #0002;overflow:hidden}
+.code-title{font:var(--fs-1) var(--mono);padding:16px 24px;border-bottom:1px solid var(--paper-line);color:var(--paper-muted)}
+pre{margin:0;padding:24px;overflow:auto;font:var(--fs-2)/1.9 var(--mono);max-width:100%}
+.code-type{color:#7d5621}
+.code-arg{color:#654f79}
+.code-string{color:#537047}
+.code-window pre{font-size:var(--fs-2);line-height:1.35;padding:14px}
+.section>h2{line-height:1.2}
+.benefits{display:grid}
+.benefit{background:var(--paper);color:var(--ink);border:1px solid #c3aa7b;min-width:0}
+.benefit h3{line-height:1.25}
+.benefit p{color:var(--paper-muted)}
+.steps{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));counter-reset:steps}
+.steps li{min-width:0;counter-increment:steps}
+.steps li:before{content:"0" counter(steps);font:var(--fs-1) var(--mono);color:var(--gold);margin-bottom:12px}
+.steps p{color:var(--muted)}
+.steps code{font:var(--fs-1) var(--mono);overflow-wrap:anywhere}
+.origins p{color:var(--muted);font-size:var(--fs-3);line-height:1.9}
+.origins a,.conventions a{text-decoration:underline;text-underline-offset:3px}
+.conventions>p{color:var(--muted)}
+.conventions-grid{display:grid;grid-template-columns:1fr 1fr}
+.conventions h3{font-size:var(--fs-4);margin-bottom:10px}
+.conventions-grid p{font-size:var(--fs-2);line-height:1.9;color:var(--muted)}
+footer{border-top:1px solid var(--line);font-size:var(--fs-1);color:var(--muted)}
+.footer-inner{display:flex;justify-content:space-between;gap:20px;padding-block:24px;flex-wrap:wrap}
+.footer-links{display:flex;flex-wrap:wrap;gap:22px}
+@media(max-width:1000px){
+.hero{gap:36px;grid-template-columns:1fr}
+.benefits{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fork-link{display:none}
+}
+@media(max-width:720px){
+.wrap{padding-inline:20px}
+.nav{min-height:76px;gap:14px}
+.nav nav{gap:16px;font-size:var(--fs-1)}
+.wordmark{font-size:var(--fs-5)}
+.hero{grid-template-columns:1fr;gap:30px;padding:48px 0 38px}
+h1{font-size:calc(var(--fs-6)*1.4);letter-spacing:-1px}
+.subtitle{font-size:var(--fs-3);margin-top:20px}
+.eyebrow{margin-bottom:18px}
+.code-title{padding:13px 20px}
+pre{padding:20px;font-size:var(--fs-1)}
+.code-window pre{font-size:var(--fs-1)}
+.benefits{grid-template-columns:1fr;gap:14px}
+.benefit{padding:24px}
+.steps{grid-template-columns:1fr;gap:26px}
+.conventions-grid{grid-template-columns:1fr;gap:26px}
+.footer-inner{align-items:flex-start;flex-direction:column;gap:14px}
+}
+@media(prefers-reduced-motion:reduce){
+html{scroll-behavior:auto}
+}
+h1{font-size:clamp(var(--fs-6),3.5vw,calc(var(--fs-6)*1.4));letter-spacing:-.8px;line-height:1.2}
+.hero{padding:48px 0 40px;gap:40px}
+.subtitle{font-size:var(--fs-3)}
+.hero-claim{margin-top:18px;color:var(--gold);font-size:var(--fs-4);font-weight:600;line-height:1.5;white-space:nowrap}
+.subtitle{margin-top:8px}
+@media(max-width:720px){
+.hero-claim{font-size:var(--fs-3);white-space:normal}
+}
+.actions{gap:10px;margin-top:22px}
+.button{border-radius:5px;padding:8px 16px;gap:8px;font-size:var(--fs-2);min-height:40px}
+.button.primary{background:var(--paper);border-color:var(--paper);color:var(--ink)}
+.button:hover{background:var(--gold);border-color:var(--gold);color:var(--bg)}
+.benefits{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.benefit{padding:18px 20px;border-radius:6px}
+.benefit h3{font-size:var(--fs-5);margin-bottom:8px}
+.benefit p{font-size:var(--fs-2);line-height:1.7}
+.section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.section-heading h2{line-height:1.3}
+.section-heading>a{font-size:var(--fs-2);color:var(--gold);white-space:nowrap}
+.steps{margin:0;gap:24px}
+.steps li:before{display:none}
+.steps h3{font-size:var(--fs-5);margin-bottom:6px}
+.steps p{font-size:var(--fs-2);line-height:1.7}
+.conventions>p{font-size:var(--fs-2);margin-bottom:18px}
+.conventions-grid{gap:24px}
+@media(max-width:1000px){
+.benefits{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+h1{font-size:var(--fs-6)}
+.hero{padding:32px 0;gap:24px}
+.benefits{grid-template-columns:1fr;gap:10px}
+.benefit{padding:16px 18px}
+.steps{gap:18px}
+.section-heading{gap:10px}
+.section-heading>a{font-size:var(--fs-1)}
+}
+{{chrome_css}}
+.code-window{container-type:inline-size}
+@media(max-width:720px){
+.code-window pre{font-size:min(var(--fs-1),3cqi);padding:12px}
+}
+@media(max-width:720px){
+.hero h1 .wide-only{display:none}
+}
+.roadmap-note{color:var(--muted);margin:0 0 16px}
+.rm-svg{display:block;width:100%;height:auto;font-family:inherit}
+.rm-tall{display:none}
+.rm-svg .rm-node{fill:rgba(217,184,120,.04);stroke:var(--line);stroke-width:1.5;stroke-dasharray:5 4}
+.rm-svg .rm-node.now{fill:rgba(217,184,120,.14);stroke:var(--gold);stroke-width:2;stroke-dasharray:none}
+.rm-svg .rm-name{fill:var(--cream);font-size:var(--fs-3);font-weight:600}
+.rm-svg .rm-state{fill:var(--muted);font-size:var(--fs-1)}
+.rm-svg .now+.rm-name+.rm-state{fill:var(--gold)}
+.rm-svg .rm-link{stroke:var(--gold);stroke-width:1.5;fill:none;opacity:.75}
+.rm-svg .rm-tie{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 4;fill:none;opacity:.7}
+.rm-svg .rm-head{fill:var(--gold);opacity:.85}
+.rm-svg .rm-bar{fill:rgba(217,184,120,.03);stroke:var(--line);stroke-width:1.5;stroke-dasharray:5 4}
+.rm-wide .rm-name{font-size:var(--fs-2)}
+@media(max-width:720px){
+.rm-wide{display:none}
+.rm-tall{display:block;max-width:380px;margin:0 auto}
+}
+.roadmap-aside{margin:22px 0 0;padding:10px 16px;border-left:2px solid var(--gold);color:var(--muted);font-size:var(--fs-2);line-height:1.7}
+.roadmap-aside a{color:inherit;text-decoration:underline}
+main.wrap>section:not(.hero){margin:0;padding:24px 0;border-block:0;border-top:1px solid var(--line)}
+main.wrap>.hero+section{border-top:0}
+main.wrap>section>h2,main.wrap>section .section-heading h2{font-size:var(--fs-5);line-height:1.3;margin:0 0 12px}
+main.wrap>section .section-heading{margin-bottom:12px}
+main.wrap>.origins>p{max-width:900px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+{{header}}
+<main id="main" class="wrap">
+<section class="hero" aria-labelledby="hero-title"><div><h1 id="hero-title"><em>soloAS</em>,<br>the Unreal scripting system <br class="wide-only">built for design</h1><p class="hero-claim">Writes like C++. Runs like C++. Feels beyond C++.</p><p class="subtitle">All for development speed and user experience. Solo is more.</p><div class="actions"><a class="button primary" href="docs/en/requirements.html">Get started ↗</a><a class="button" href="https://github.com/cuviss-open/soloAS">GitHub ↗</a></div></div><figure class="code-window"><div class="code-title">HelloActor.as</div><pre><code><span class="code-type">class</span> AHelloActor : AActor
+{
+    <span class="code-type">UFUNCTION</span>(<span class="code-arg">BlueprintOverride</span>)
+    void BeginPlay()
+    {
+        Print("Hello from soloAS!");
+    }
+}</code></pre></figure></section>
+<section class="section" aria-labelledby="benefits-title"><h2 id="benefits-title">What you can do</h2><div class="benefits"><article class="benefit"><h3>Requirements</h3><p>Use stock Unreal Engine without compiling the engine, with a straightforward environment setup.</p></article><article class="benefit"><h3>Rapid iteration</h3><p>Develop with instant feedback and automatic script reload.</p></article><article class="benefit"><h3>Peak performance</h3><p>Compile supported scripts to native C++ for release, with very little performance loss.</p></article><article class="benefit"><h3>Beyond typical scripting (coming soon)</h3><p>Smart pointers, raw pointers, async, multithreading and lambdas give AS almost unlimited possibilities.</p></article><article class="benefit"><h3>Feature Mods (coming soon)</h3><p>Use AS scripts to build Feature Mods, combine projects like building blocks and deliver hot updates.</p></article><article class="benefit"><h3>Automatic binding (coming soon)</h3><p>Automatically turn UE C++ module APIs into script APIs with broad coverage, including APIs outside the reflection system.</p></article></div></section>
+<section class="section start" aria-labelledby="start-title"><div class="section-heading"><h2 id="start-title">Start with your own project</h2><a href="/docs/en/overview.html">Documentation ↗</a></div><ol class="steps"><li><h3>Install soloAS</h3><p>Download and extract into your project&#8217;s <code>Plugins/</code>, keeping its folder layout.</p></li><li><h3>Choose your features</h3><p>Enable plugins such as GAS and Enhanced Input as needed.</p></li><li><h3>Write a script</h3><p>Put a <code>.as</code> file in <code>Script/</code>; it reloads on save, so you can test right in the editor.</p></li></ol></section>
+<section class="section roadmap" id="roadmap" aria-labelledby="roadmap-title"><h2 id="roadmap-title">Roadmap</h2><p class="roadmap-note">The items below are planned directions; their scope, order and release may change.</p><svg class="rm-svg rm-wide" viewBox="0 0 1100 210" role="img" aria-label="Roadmap: Plugin core (released), then Core extensions, Feature Mods, Manual binding core, Auto binding, Manual binding packs, all coming soon; developer tools (packaging, AI-assisted development) start with Core extensions and advance together with each extension, coming soon."><defs><marker id="rm-h-w" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto"><path class="rm-head" d="M0 0L8 4L0 8z"/></marker></defs><g><title>Plugin core: Runtime, Bridge, GAS, Enhanced Input</title><rect class="rm-node now" x="0" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="80.0" y="35" text-anchor="middle">Plugin core</text><text class="rm-state" x="80.0" y="54" text-anchor="middle">Released</text></g><path class="rm-link" d="M163 38.0H185" marker-end="url(#rm-h-w)"/><g><title>Core extensions: Interfaces shared by scripts and Blueprints, inheriting and calling Blueprints, Blueprint structs, capturing lambdas</title><rect class="rm-node" x="188" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="268.0" y="35" text-anchor="middle">Core extensions</text><text class="rm-state" x="268.0" y="54" text-anchor="middle">Coming soon</text></g><path class="rm-link" d="M351 38.0H373" marker-end="url(#rm-h-w)"/><g><title>Feature Mods: Mods that load, unload and update independently, with function-body hot patches</title><rect class="rm-node" x="376" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="456.0" y="35" text-anchor="middle">Feature Mods</text><text class="rm-state" x="456.0" y="54" text-anchor="middle">Coming soon</text></g><path class="rm-link" d="M539 38.0H561" marker-end="url(#rm-h-w)"/><g><title>Manual binding core: Dynamic types, smart pointers, async and multithreading</title><rect class="rm-node" x="564" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="644.0" y="35" text-anchor="middle">Manual binding core</text><text class="rm-state" x="644.0" y="54" text-anchor="middle">Coming soon</text></g><path class="rm-link" d="M727 38.0H749" marker-end="url(#rm-h-w)"/><g><title>Auto binding: Tick plugins in the editor to generate script APIs, including APIs outside reflection</title><rect class="rm-node" x="752" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="832.0" y="35" text-anchor="middle">Auto binding</text><text class="rm-state" x="832.0" y="54" text-anchor="middle">Coming soon</text></g><path class="rm-link" d="M915 38.0H937" marker-end="url(#rm-h-w)"/><g><title>Manual binding packs: Supplementary bindings by engine plugin, such as PCG, Niagara, Game Features and Common UI</title><rect class="rm-node" x="940" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="1020.0" y="35" text-anchor="middle">Manual binding packs</text><text class="rm-state" x="1020.0" y="54" text-anchor="middle">Coming soon</text></g><path class="rm-tie" d="M268.0 66V128"/><path class="rm-tie" d="M456.0 66V128"/><path class="rm-tie" d="M644.0 66V128"/><path class="rm-tie" d="M832.0 66V128"/><path class="rm-tie" d="M1020.0 66V128"/><g><title>A window for bytecode and semi-AOT packaging plus a command line; let AI assist development through MCP</title><rect class="rm-bar" x="188" y="128" width="912" height="64" rx="10"/><text class="rm-name" x="644.0" y="154" text-anchor="middle">Developer tools (packaging, AI-assisted development)</text><text class="rm-state" x="644.0" y="176" text-anchor="middle">Advances together with each extension · Coming soon</text></g></svg><svg class="rm-svg rm-tall" viewBox="0 0 300 600" role="img" aria-label="Roadmap: Plugin core (released), then Core extensions, Feature Mods, Manual binding core, Auto binding, Manual binding packs, all coming soon; developer tools (packaging, AI-assisted development) start with Core extensions and advance together with each extension, coming soon."><defs><marker id="rm-h-t" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto"><path class="rm-head" d="M0 0L8 4L0 8z"/></marker></defs><g><title>Plugin core: Runtime, Bridge, GAS, Enhanced Input</title><rect class="rm-node now" x="10" y="4" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="27" text-anchor="middle">Plugin core</text><text class="rm-state" x="125" y="46" text-anchor="middle">Released</text></g><path class="rm-link" d="M125 59V79" marker-end="url(#rm-h-t)"/><g><title>Core extensions: Interfaces shared by scripts and Blueprints, inheriting and calling Blueprints, Blueprint structs, capturing lambdas</title><rect class="rm-node" x="10" y="82" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="105" text-anchor="middle">Core extensions</text><text class="rm-state" x="125" y="124" text-anchor="middle">Coming soon</text></g><path class="rm-link" d="M125 137V157" marker-end="url(#rm-h-t)"/><g><title>Feature Mods: Mods that load, unload and update independently, with function-body hot patches</title><rect class="rm-node" x="10" y="160" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="183" text-anchor="middle">Feature Mods</text><text class="rm-state" x="125" y="202" text-anchor="middle">Coming soon</text></g><path class="rm-link" d="M125 215V235" marker-end="url(#rm-h-t)"/><g><title>Manual binding core: Dynamic types, smart pointers, async and multithreading</title><rect class="rm-node" x="10" y="238" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="261" text-anchor="middle">Manual binding core</text><text class="rm-state" x="125" y="280" text-anchor="middle">Coming soon</text></g><path class="rm-link" d="M125 293V313" marker-end="url(#rm-h-t)"/><g><title>Auto binding: Tick plugins in the editor to generate script APIs, including APIs outside reflection</title><rect class="rm-node" x="10" y="316" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="339" text-anchor="middle">Auto binding</text><text class="rm-state" x="125" y="358" text-anchor="middle">Coming soon</text></g><path class="rm-link" d="M125 371V391" marker-end="url(#rm-h-t)"/><g><title>Manual binding packs: Supplementary bindings by engine plugin, such as PCG, Niagara, Game Features and Common UI</title><rect class="rm-node" x="10" y="394" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="417" text-anchor="middle">Manual binding packs</text><text class="rm-state" x="125" y="436" text-anchor="middle">Coming soon</text></g><path class="rm-tie" d="M270 108.0V490"/><path class="rm-tie" d="M240 108.0H270"/><path class="rm-tie" d="M240 186.0H270"/><path class="rm-tie" d="M240 264.0H270"/><path class="rm-tie" d="M240 342.0H270"/><path class="rm-tie" d="M240 420.0H270"/><g><title>A window for bytecode and semi-AOT packaging plus a command line; let AI assist development through MCP</title><rect class="rm-bar" x="10" y="490" width="280" height="84" rx="10"/><text class="rm-name" x="150" y="518" text-anchor="middle" style="font-size:var(--fs-2)">Developer tools</text><text class="rm-state" x="150" y="534" text-anchor="middle">(packaging, AI-assisted development)</text><text class="rm-state" x="150" y="550" text-anchor="middle">Advances together with each extension</text><text class="rm-state" x="150" y="566" text-anchor="middle">Coming soon</text></g></svg><p class="roadmap-aside">Note: soloAS is developed by an independent game developer working with a team of AI agents. The key technical problems behind every upcoming feature have already been solved, but limited compute and personal time leave a lot of smaller testing and verification work, so no schedule is guaranteed. Individuals or teams who want to join the development, or to support it with people or resources, are very <a href="#contact">welcome</a> — your support will speed the project up.</p></section>
+<section class="origins" aria-labelledby="origins-title"><h2 id="origins-title">Acknowledgements</h2><p>soloAS builds on Hazelight’s <a href="https://angelscript.hazelight.se/">UnrealEngine-Angelscript</a>. Thank you to Epic Games for its excellent open-source engineering, to Hazelight for sharing this work, and to <a href="https://www.angelcode.com/angelscript/">AngelScript</a> creator Andreas Jönsson. We also thank the contributors to other publicly available third-party scripting projects, and anyone who has contributed to UE Angelscript, directly or indirectly.</p></section>
+<section class="conventions" aria-labelledby="conventions-title"><h2 id="conventions-title">Contributing and giving back</h2><p>soloAS is open source. To help the project get something back, we make an attribution request and invite you to share your project; neither is mandatory. You are welcome to report problems and open issues in the <a href="https://github.com/cuviss-open/soloAS">repository</a>, and more contributors are welcome.</p><div class="conventions-grid"><article><h3>Attribution request</h3><p>If your project uses soloAS, we would appreciate a note saying "Uses soloAS" in your credits, store page, README or website, with a link to the <a href="https://soloas.cuviss.com">soloAS website</a> or <a href="https://github.com/cuviss-open/soloAS">repository</a>. This is not a license requirement; we simply value the gesture.</p></article><article><h3>Showcase</h3><p>If a public project states that it uses soloAS, we may list it as a showcase, showing only its name, a short description and public screenshots or links, never in a misleading way. Owners can ask for changes or removal at any time. You are also welcome to let us know that your project can be showcased.</p></article></div></section>
+</main>
+{{footer}}
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#211a14">
+<meta name="description" content="为设计而生的 Unreal 脚本。写得像 C++，跑得像 C++，体验超 C++。一切为了开发效率与用户体验，单即是多。">
+<title>soloAS · 为设计而生的 Unreal 脚本系统</title>
+<meta property="og:title" content="soloAS · 为设计而生的 Unreal 脚本系统">
+<meta property="og:description" content="写得像 C++，跑得像 C++，体验超 C++。一切为了开发效率与用户体验，单即是多。">
+<meta name="twitter:title" content="soloAS · 为设计而生的 Unreal 脚本系统">
+<meta name="twitter:description" content="写得像 C++，跑得像 C++，体验超 C++。一切为了开发效率与用户体验，单即是多。">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+{{alternates}}
+<style>
+/* Font sizes: only these six levels may be used anywhere (tools/check_site.py enforces it).
+   --fs-1 12px  small print: captions, notes, legends, tiny labels
+   --fs-2 14px  small text: descriptions, navigation, table and code helper text
+   --fs-3 16px  body text
+   --fs-4 18px  h3 subheadings
+   --fs-5 22px  section headings (h2), dialog titles, wordmark
+   --fs-6 32px  page title (h1) and hero, scaled with clamp()/calc() */
+:root{--fs-1:12px;--fs-2:14px;--fs-3:16px;--fs-4:18px;--fs-5:22px;--fs-6:32px;--bg:#211a14;--ink:#30281e;--paper:#f1e9d8;--paper-muted:#655a48;--cream:#f4ecdd;--muted:#c7bba7;--gold:#d9b878;--line:rgba(217,184,120,.25);--paper-line:#cbbd9e;--serif:"Iowan Old Style","Palatino Linotype",Palatino,Baskerville,"Source Han Serif SC","Songti SC",serif;--sans:"Avenir Next","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;--mono:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:28px;-webkit-text-size-adjust:100%}
+body{margin:0;background:radial-gradient(ellipse 850px 700px at 60% 250px,#6a4d2d55,transparent),var(--bg);color:var(--cream);font:var(--fs-3)/1.7 var(--sans)}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--gold)}
+a:focus-visible{outline:2px solid var(--gold);outline-offset:5px}
+.wrap{max-width:1248px;padding:0 48px;margin:auto}
+.skip{position:absolute;top:-100px;left:16px;background:var(--paper);color:var(--ink);padding:8px 16px;z-index:5}
+.skip:focus{top:8px}
+header{border-bottom:1px solid var(--line)}
+.nav{min-height:88px;display:flex;gap:28px;align-items:center}
+.wordmark{font:var(--fs-6)/1 var(--serif);letter-spacing:-1.2px;flex:none}
+.wordmark em{font-style:normal;color:var(--gold)}
+.nav nav{margin-left:auto;display:flex;gap:26px;align-items:center;font-size:var(--fs-2)}
+.language{display:inline-flex;align-items:center;min-height:44px;min-width:44px;justify-content:center;color:var(--gold)}
+h1,h2,h3,p{margin:0;overflow-wrap:anywhere}
+h1,h2,h3{font-family:var(--serif);font-weight:400}
+h1 em{font-style:normal;color:var(--gold)}
+.hero{display:grid;grid-template-columns:1.15fr 1fr;align-items:center}
+.hero>div{min-width:0}
+.eyebrow{font:var(--fs-1) var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:24px}
+.subtitle{color:var(--muted);max-width:520px;line-height:1.8}
+.actions{display:flex;flex-wrap:wrap}
+.button{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+.code-window{margin:0;min-width:0;background:var(--paper);color:var(--ink);border:1px solid #c3aa7b;border-radius:12px;box-shadow:0 18px 70px #0002;overflow:hidden}
+.code-title{font:var(--fs-1) var(--mono);padding:16px 24px;border-bottom:1px solid var(--paper-line);color:var(--paper-muted)}
+pre{margin:0;padding:24px;overflow:auto;font:var(--fs-2)/1.9 var(--mono);max-width:100%}
+.code-type{color:#7d5621}
+.code-arg{color:#654f79}
+.code-string{color:#537047}
+.code-window pre{font-size:var(--fs-2);line-height:1.35;padding:14px}
+.section>h2{line-height:1.2}
+.benefits{display:grid}
+.benefit{background:var(--paper);color:var(--ink);border:1px solid #c3aa7b;min-width:0}
+.benefit h3{line-height:1.25}
+.benefit p{color:var(--paper-muted)}
+.steps{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));counter-reset:steps}
+.steps li{min-width:0;counter-increment:steps}
+.steps li:before{content:"0" counter(steps);font:var(--fs-1) var(--mono);color:var(--gold);margin-bottom:12px}
+.steps p{color:var(--muted)}
+.steps code{font:var(--fs-1) var(--mono);overflow-wrap:anywhere}
+.origins p{color:var(--muted);font-size:var(--fs-3);line-height:1.9}
+.origins a,.conventions a{text-decoration:underline;text-underline-offset:3px}
+.conventions>p{color:var(--muted)}
+.conventions-grid{display:grid;grid-template-columns:1fr 1fr}
+.conventions h3{font-size:var(--fs-4);margin-bottom:10px}
+.conventions-grid p{font-size:var(--fs-2);line-height:1.9;color:var(--muted)}
+footer{border-top:1px solid var(--line);font-size:var(--fs-1);color:var(--muted)}
+.footer-inner{display:flex;justify-content:space-between;gap:20px;padding-block:24px;flex-wrap:wrap}
+.footer-links{display:flex;flex-wrap:wrap;gap:22px}
+@media(max-width:1000px){
+.hero{gap:36px;grid-template-columns:1fr}
+.benefits{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fork-link{display:none}
+}
+@media(max-width:720px){
+.wrap{padding-inline:20px}
+.nav{min-height:76px;gap:14px}
+.nav nav{gap:16px;font-size:var(--fs-1)}
+.wordmark{font-size:var(--fs-5)}
+.hero{grid-template-columns:1fr;gap:30px;padding:48px 0 38px}
+h1{font-size:calc(var(--fs-6)*1.4);letter-spacing:-1px}
+.subtitle{font-size:var(--fs-3);margin-top:20px}
+.eyebrow{margin-bottom:18px}
+.code-title{padding:13px 20px}
+pre{padding:20px;font-size:var(--fs-1)}
+.code-window pre{font-size:var(--fs-1)}
+.benefits{grid-template-columns:1fr;gap:14px}
+.benefit{padding:24px}
+.steps{grid-template-columns:1fr;gap:26px}
+.conventions-grid{grid-template-columns:1fr;gap:26px}
+.footer-inner{align-items:flex-start;flex-direction:column;gap:14px}
+}
+@media(prefers-reduced-motion:reduce){
+html{scroll-behavior:auto}
+}
+h1{font-size:clamp(var(--fs-6),3.5vw,calc(var(--fs-6)*1.4));letter-spacing:-.8px;line-height:1.2}
+.hero{padding:48px 0 40px;gap:40px}
+.subtitle{font-size:var(--fs-3)}
+.hero-claim{margin-top:18px;color:var(--gold);font-size:var(--fs-4);font-weight:600;line-height:1.5;white-space:nowrap}
+.subtitle{margin-top:8px}
+@media(max-width:720px){
+.hero-claim{font-size:var(--fs-3);white-space:normal}
+}
+.actions{gap:10px;margin-top:22px}
+.button{border-radius:5px;padding:8px 16px;gap:8px;font-size:var(--fs-2);min-height:40px}
+.button.primary{background:var(--paper);border-color:var(--paper);color:var(--ink)}
+.button:hover{background:var(--gold);border-color:var(--gold);color:var(--bg)}
+.benefits{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.benefit{padding:18px 20px;border-radius:6px}
+.benefit h3{font-size:var(--fs-5);margin-bottom:8px}
+.benefit p{font-size:var(--fs-2);line-height:1.7}
+.section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.section-heading h2{line-height:1.3}
+.section-heading>a{font-size:var(--fs-2);color:var(--gold);white-space:nowrap}
+.steps{margin:0;gap:24px}
+.steps li:before{display:none}
+.steps h3{font-size:var(--fs-5);margin-bottom:6px}
+.steps p{font-size:var(--fs-2);line-height:1.7}
+.conventions>p{font-size:var(--fs-2);margin-bottom:18px}
+.conventions-grid{gap:24px}
+@media(max-width:1000px){
+.benefits{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+h1{font-size:var(--fs-6)}
+.hero{padding:32px 0;gap:24px}
+.benefits{grid-template-columns:1fr;gap:10px}
+.benefit{padding:16px 18px}
+.steps{gap:18px}
+.section-heading{gap:10px}
+.section-heading>a{font-size:var(--fs-1)}
+}
+{{chrome_css}}
+.code-window{container-type:inline-size}
+@media(max-width:720px){
+.code-window pre{font-size:min(var(--fs-1),3cqi);padding:12px}
+}
+.hero>div:first-child{container-type:inline-size}
+.hero-line{white-space:nowrap;font-size:min(1em,7.4cqi)}
+.roadmap-note{color:var(--muted);margin:0 0 16px}
+.rm-svg{display:block;width:100%;height:auto;font-family:inherit}
+.rm-tall{display:none}
+.rm-svg .rm-node{fill:rgba(217,184,120,.04);stroke:var(--line);stroke-width:1.5;stroke-dasharray:5 4}
+.rm-svg .rm-node.now{fill:rgba(217,184,120,.14);stroke:var(--gold);stroke-width:2;stroke-dasharray:none}
+.rm-svg .rm-name{fill:var(--cream);font-size:var(--fs-3);font-weight:600}
+.rm-svg .rm-state{fill:var(--muted);font-size:var(--fs-1)}
+.rm-svg .now+.rm-name+.rm-state{fill:var(--gold)}
+.rm-svg .rm-link{stroke:var(--gold);stroke-width:1.5;fill:none;opacity:.75}
+.rm-svg .rm-tie{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 4;fill:none;opacity:.7}
+.rm-svg .rm-head{fill:var(--gold);opacity:.85}
+.rm-svg .rm-bar{fill:rgba(217,184,120,.03);stroke:var(--line);stroke-width:1.5;stroke-dasharray:5 4}
+@media(max-width:720px){
+.rm-wide{display:none}
+.rm-tall{display:block;max-width:380px;margin:0 auto}
+}
+.roadmap-aside{margin:22px 0 0;padding:10px 16px;border-left:2px solid var(--gold);color:var(--muted);font-size:var(--fs-2);line-height:1.7}
+.roadmap-aside a{color:inherit;text-decoration:underline}
+main.wrap>section:not(.hero){margin:0;padding:24px 0;border-block:0;border-top:1px solid var(--line)}
+main.wrap>.hero+section{border-top:0}
+main.wrap>section>h2,main.wrap>section .section-heading h2{font-size:var(--fs-5);line-height:1.3;margin:0 0 12px}
+main.wrap>section .section-heading{margin-bottom:12px}
+main.wrap>.origins>p{max-width:900px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳至正文</a>
+{{header}}
+<main id="main" class="wrap">
+<section class="hero" aria-labelledby="hero-title"><div><h1 id="hero-title"><em>soloAS</em>，<br><span class="hero-line">为设计而生的 Unreal 脚本系统</span></h1><p class="hero-claim">写得像 C++，跑得像 C++，体验超 C++。</p><p class="subtitle">一切为了开发效率与用户体验，单即是多。</p><div class="actions"><a class="button primary" href="../docs/zh/requirements.html">开始使用 ↗</a><a class="button" href="https://github.com/cuviss-open/soloAS">GitHub ↗</a></div></div><figure class="code-window"><div class="code-title">HelloActor.as</div><pre><code><span class="code-type">class</span> AHelloActor : AActor
+{
+    <span class="code-type">UFUNCTION</span>(<span class="code-arg">BlueprintOverride</span>)
+    void BeginPlay()
+    {
+        Print("Hello from soloAS!");
+    }
+}</code></pre></figure></section>
+<section class="section" aria-labelledby="benefits-title"><h2 id="benefits-title">能做什么</h2><div class="benefits"><article class="benefit"><h3>使用要求</h3><p>使用原版 Unreal Engine，无需编译引擎，环境搭建简单。</p></article><article class="benefit"><h3>高速迭代</h3><p>即写即反馈，脚本自动重载，让开发更流畅。</p></article><article class="benefit"><h3>极致性能</h3><p>发布时可将支持的脚本编译为原生 C++，性能损失很低。</p></article><article class="benefit"><h3>超模脚本（待发布）</h3><p>智能指针、裸指针、异步、多线程与 Lambda，让 AS 拥有近乎无限的可能。</p></article><article class="benefit"><h3>功能模组（待发布）</h3><p>利用 AS 脚本的特性实现功能模组，像搭积木一样构建项目，支持热更新。</p></article><article class="benefit"><h3>自动绑定（待发布）</h3><p>将 UE C++ 模块 API 自动转为脚本 API，覆盖广泛，反射系统之外的 API 也能转换。</p></article></div></section>
+<section class="section start" aria-labelledby="start-title"><div class="section-heading"><h2 id="start-title">从自己的项目开始</h2><a href="/docs/zh/overview.html">使用文档 ↗</a></div><ol class="steps"><li><h3>安装 soloAS</h3><p>下载并解压到项目的 <code>Plugins/</code>，保留目录层次。</p></li><li><h3>选择要用的功能</h3><p>按需启用 GAS、Enhanced Input 等插件。</p></li><li><h3>写一个脚本</h3><p>把 <code>.as</code> 文件放进 <code>Script/</code>，保存即自动重载，直接在编辑器中测试。</p></li></ol></section>
+<section class="section roadmap" id="roadmap" aria-labelledby="roadmap-title"><h2 id="roadmap-title">路线图</h2><p class="roadmap-note">以下为计划中的方向，内容、顺序与是否发布可能调整。</p><svg class="rm-svg rm-wide" viewBox="0 0 1100 210" role="img" aria-label="路线图：插件核心（已发布）→ 核心扩展 → 功能模组 → 手工绑定核心 → 自动绑定 → 手工绑定包，后五项待发布；开发工具（项目打包、AI 辅助开发）从核心扩展起随各扩展一起推进，待发布。"><defs><marker id="rm-h-w" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto"><path class="rm-head" d="M0 0L8 4L0 8z"/></marker></defs><g><title>插件核心：Runtime、Bridge、GAS、Enhanced Input</title><rect class="rm-node now" x="0" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="80.0" y="35" text-anchor="middle">插件核心</text><text class="rm-state" x="80.0" y="54" text-anchor="middle">已发布</text></g><path class="rm-link" d="M163 38.0H185" marker-end="url(#rm-h-w)"/><g><title>核心扩展：脚本与蓝图共用接口、互相继承调用，使用蓝图结构体，带捕获的 lambda</title><rect class="rm-node" x="188" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="268.0" y="35" text-anchor="middle">核心扩展</text><text class="rm-state" x="268.0" y="54" text-anchor="middle">待发布</text></g><path class="rm-link" d="M351 38.0H373" marker-end="url(#rm-h-w)"/><g><title>功能模组：可独立装载、卸载和更新的 Mod，函数体级别热补丁</title><rect class="rm-node" x="376" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="456.0" y="35" text-anchor="middle">功能模组</text><text class="rm-state" x="456.0" y="54" text-anchor="middle">待发布</text></g><path class="rm-link" d="M539 38.0H561" marker-end="url(#rm-h-w)"/><g><title>手工绑定核心：动态类型、智能指针、异步和多线程</title><rect class="rm-node" x="564" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="644.0" y="35" text-anchor="middle">手工绑定核心</text><text class="rm-state" x="644.0" y="54" text-anchor="middle">待发布</text></g><path class="rm-link" d="M727 38.0H749" marker-end="url(#rm-h-w)"/><g><title>自动绑定：编辑器里勾选插件，自动生成脚本 API，覆盖反射之外的 API</title><rect class="rm-node" x="752" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="832.0" y="35" text-anchor="middle">自动绑定</text><text class="rm-state" x="832.0" y="54" text-anchor="middle">待发布</text></g><path class="rm-link" d="M915 38.0H937" marker-end="url(#rm-h-w)"/><g><title>手工绑定包：按引擎插件划分的补充绑定，如 PCG、Niagara、Game Features、Common UI</title><rect class="rm-node" x="940" y="10" width="160" height="56" rx="10"/><text class="rm-name" x="1020.0" y="35" text-anchor="middle">手工绑定包</text><text class="rm-state" x="1020.0" y="54" text-anchor="middle">待发布</text></g><path class="rm-tie" d="M268.0 66V128"/><path class="rm-tie" d="M456.0 66V128"/><path class="rm-tie" d="M644.0 66V128"/><path class="rm-tie" d="M832.0 66V128"/><path class="rm-tie" d="M1020.0 66V128"/><g><title>配置并完成字节码和半 AOT 打包的窗口，另有命令行；让 AI 通过 MCP 辅助开发</title><rect class="rm-bar" x="188" y="128" width="912" height="64" rx="10"/><text class="rm-name" x="644.0" y="154" text-anchor="middle">开发工具（项目打包、AI 辅助开发）</text><text class="rm-state" x="644.0" y="176" text-anchor="middle">随各扩展一起推进 · 待发布</text></g></svg><svg class="rm-svg rm-tall" viewBox="0 0 300 600" role="img" aria-label="路线图：插件核心（已发布）→ 核心扩展 → 功能模组 → 手工绑定核心 → 自动绑定 → 手工绑定包，后五项待发布；开发工具（项目打包、AI 辅助开发）从核心扩展起随各扩展一起推进，待发布。"><defs><marker id="rm-h-t" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto"><path class="rm-head" d="M0 0L8 4L0 8z"/></marker></defs><g><title>插件核心：Runtime、Bridge、GAS、Enhanced Input</title><rect class="rm-node now" x="10" y="4" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="27" text-anchor="middle">插件核心</text><text class="rm-state" x="125" y="46" text-anchor="middle">已发布</text></g><path class="rm-link" d="M125 59V79" marker-end="url(#rm-h-t)"/><g><title>核心扩展：脚本与蓝图共用接口、互相继承调用，使用蓝图结构体，带捕获的 lambda</title><rect class="rm-node" x="10" y="82" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="105" text-anchor="middle">核心扩展</text><text class="rm-state" x="125" y="124" text-anchor="middle">待发布</text></g><path class="rm-link" d="M125 137V157" marker-end="url(#rm-h-t)"/><g><title>功能模组：可独立装载、卸载和更新的 Mod，函数体级别热补丁</title><rect class="rm-node" x="10" y="160" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="183" text-anchor="middle">功能模组</text><text class="rm-state" x="125" y="202" text-anchor="middle">待发布</text></g><path class="rm-link" d="M125 215V235" marker-end="url(#rm-h-t)"/><g><title>手工绑定核心：动态类型、智能指针、异步和多线程</title><rect class="rm-node" x="10" y="238" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="261" text-anchor="middle">手工绑定核心</text><text class="rm-state" x="125" y="280" text-anchor="middle">待发布</text></g><path class="rm-link" d="M125 293V313" marker-end="url(#rm-h-t)"/><g><title>自动绑定：编辑器里勾选插件，自动生成脚本 API，覆盖反射之外的 API</title><rect class="rm-node" x="10" y="316" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="339" text-anchor="middle">自动绑定</text><text class="rm-state" x="125" y="358" text-anchor="middle">待发布</text></g><path class="rm-link" d="M125 371V391" marker-end="url(#rm-h-t)"/><g><title>手工绑定包：按引擎插件划分的补充绑定，如 PCG、Niagara、Game Features、Common UI</title><rect class="rm-node" x="10" y="394" width="230" height="52" rx="10"/><text class="rm-name" x="125" y="417" text-anchor="middle">手工绑定包</text><text class="rm-state" x="125" y="436" text-anchor="middle">待发布</text></g><path class="rm-tie" d="M270 108.0V490"/><path class="rm-tie" d="M240 108.0H270"/><path class="rm-tie" d="M240 186.0H270"/><path class="rm-tie" d="M240 264.0H270"/><path class="rm-tie" d="M240 342.0H270"/><path class="rm-tie" d="M240 420.0H270"/><g><title>配置并完成字节码和半 AOT 打包的窗口，另有命令行；让 AI 通过 MCP 辅助开发</title><rect class="rm-bar" x="10" y="490" width="280" height="84" rx="10"/><text class="rm-name" x="150" y="518" text-anchor="middle" style="font-size:var(--fs-2)">开发工具（项目打包、AI 辅助开发）</text><text class="rm-state" x="150" y="540" text-anchor="middle">随各扩展一起推进</text><text class="rm-state" x="150" y="556" text-anchor="middle">待发布</text></g></svg><p class="roadmap-aside">注：本项目是一个独立游戏开发者利用 AI 组建 AI 团队来开发的项目，所有待发布的内容都已经解决了关键难题。但受限于算力和个人时间，还剩很多零碎的测试与验证，所以进度不做任何保证。如果有个人或团队希望参与开发，或者提供人力、物力支持，都十分<a href="#contact">欢迎</a>，你的支持能加速项目的推进。</p></section>
+<section class="origins" aria-labelledby="origins-title"><h2 id="origins-title">致谢</h2><p>soloAS 基于 Hazelight 的 <a href="https://angelscript.hazelight.se/">UnrealEngine-Angelscript</a>。感谢 Epic Games 优秀的开源工程，感谢 Hazelight 分享这项工作，感谢 <a href="https://www.angelcode.com/angelscript/">AngelScript</a> 语言作者 Andreas Jönsson。也感谢其他公开的第三方脚本项目的贡献者，以及任何对 UE Angelscript 直接或者间接有贡献的人。</p></section>
+<section class="conventions" aria-labelledby="conventions-title"><h2 id="conventions-title">贡献与回馈</h2><p>soloAS 开源。为了让项目获得开源回馈，我们诚恳提出致谢请求，并邀请你分享案例；两者都不具有强制性。欢迎在<a href="https://github.com/cuviss-open/soloAS">仓库</a>反馈问题、提交 issue，也欢迎更多人参与贡献。</p><div class="conventions-grid"><article><h3>致谢请求</h3><p>如果你的项目使用了 soloAS，希望你在鸣谢名单、商店页面、README 或官网中注明“使用了 soloAS”，并附上 <a href="https://soloas.cuviss.com">soloAS 网站</a>或<a href="https://github.com/cuviss-open/soloAS">项目仓库</a>的链接。这不是许可证的强制条款，我们很感谢这样的回馈。</p></article><article><h3>案例展示</h3><p>对于已公开并说明使用了 soloAS 的项目，我们可能将其列为使用案例，只展示项目名、简介和公开的截图或链接，不做误导性描述。项目方可随时要求修改或撤下，也欢迎主动告知项目可用于展示。</p></article></div></section>
+</main>
+{{footer}}
+</body>
+</html>

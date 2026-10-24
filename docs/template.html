@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#211a14">
+<title>{{title}} · {{suffix}}</title>
+<link rel="icon" type="image/svg+xml" href="{{favicon}}">
+{{alternates}}
+<style>
+/* Font sizes: only these six levels may be used anywhere (tools/check_site.py enforces it).
+   --fs-1 12px  small print: captions, notes, legends, tiny labels
+   --fs-2 14px  small text: descriptions, navigation, table and code helper text
+   --fs-3 16px  body text
+   --fs-4 18px  h3 subheadings
+   --fs-5 22px  section headings (h2), dialog titles, wordmark
+   --fs-6 32px  page title (h1) and hero, scaled with clamp()/calc() */
+:root{{{tokens}}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:32px}
+body{margin:0;background:var(--bg);color:var(--cream);font:var(--fs-3)/1.8 var(--sans)}
+a{color:inherit}
+a:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.skip{position:absolute;top:-100px;padding:8px 16px;background:var(--paper);color:var(--ink);z-index:3}
+.skip:focus{top:8px}
+header{border-bottom:1px solid var(--line);padding:25px 40px;display:flex;align-items:center;gap:24px}
+.wordmark{font:var(--fs-6) var(--serif);text-decoration:none;letter-spacing:-1px}
+.wordmark em{font-style:normal;color:var(--gold)}
+.header-label{color:var(--muted);font-size:var(--fs-1);letter-spacing:.1em}
+.language{margin-left:auto;color:var(--gold);font-size:var(--fs-2);text-decoration:none}
+.layout{display:grid;grid-template-columns:235px minmax(0,880px);max-width:1240px;margin:auto;gap:36px;padding:36px 32px 64px}
+.sidebar{align-self:start;position:sticky;top:24px;max-height:calc(100vh - 48px);overflow-y:auto}
+.nav-title{font:var(--fs-1) var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin:6px 0 18px}
+.sidebar nav a{display:block;text-decoration:none;font-size:var(--fs-2);padding:8px 13px;border-left:1px solid var(--line);color:var(--muted)}
+.sidebar nav a:hover,.sidebar nav a[aria-current]{color:var(--gold);background:#d9b8780c;border-left:2px solid var(--gold)}
+.document{background:var(--paper);color:var(--ink);border:1px solid #c3aa7b;border-radius:10px;padding:40px 48px;min-width:0;box-shadow:0 18px 70px #0002}
+.document h1,.document h2{font-family:var(--serif);font-weight:400;line-height:1.22}
+.document h1,.document h2,.document h3,.document p,.document li{overflow-wrap:anywhere}
+.document h1{font-size:var(--fs-5);letter-spacing:0;margin:0 0 14px;text-align:center}
+.document h2{font-size:var(--fs-4);margin:12px 0 4px;padding-top:8px;border-top:1px solid var(--paper-line)}
+.document h3{font:600 var(--fs-3)/1.22 var(--sans);margin:14px 0 4px}
+.document p,.document li{font-size:var(--fs-3)}
+.document p{margin:8px 0}
+.document li{margin:4px 0}
+.document ul,.document ol{padding-left:25px}
+.document a{color:#76551e;text-underline-offset:3px;overflow-wrap:anywhere}
+.document a:hover{color:#422d0d}
+.document .anchor{opacity:0;font:var(--fs-3) var(--mono);margin-left:10px;text-decoration:none}
+.document :is(h1,h2,h3):hover .anchor,.anchor:focus-visible{opacity:1}
+.document code{font: var(--fs-2)/1.7 var(--mono);background:#dfd2b866;padding:2px 5px;border-radius:3px;overflow-wrap:anywhere}
+.document img{display:block;max-width:100%;height:auto;margin:20px auto}
+.document pre{background:#241d16;color:var(--cream);padding:20px;border-radius:6px;overflow:auto;font:var(--fs-2)/1.8 var(--mono)}
+.document pre code{font:inherit;background:none;padding:0;white-space:pre;overflow-wrap:normal}
+.table-wrap{overflow:auto;margin:24px 0}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-2)}
+th,td{border:1px solid var(--paper-line);padding:11px 13px;text-align:left;vertical-align:top}
+th{background:#e5d9c2;font-weight:600}
+blockquote{margin:22px 0;border-left:3px solid #967745;padding:0 18px;color:var(--paper-muted)}
+.toc{display:flex;flex-wrap:wrap;gap:8px 18px;margin:24px 0 30px;padding:14px 0;border-block:1px solid var(--paper-line)}
+.toc a{font-size:var(--fs-1);text-decoration:none}
+.toc-label{font-size:var(--fs-1);color:var(--paper-muted);width:100%;text-transform:uppercase;letter-spacing:.08em}
+.document footer{margin-top:44px;border-top:1px solid var(--paper-line);padding-top:18px;font-size:var(--fs-1);color:var(--paper-muted)}
+.site-footer{max-width:1240px;margin:0 auto;padding:0 32px 30px;color:var(--muted);font-size:var(--fs-1)}
+.site-footer a{text-decoration:none}
+@media(min-width:1500px){
+.layout{max-width:1360px;grid-template-columns:245px minmax(0,980px)}
+}
+@media(max-width:800px){
+header{padding:20px}
+.header-label{display:none}
+.layout{display:block;padding:22px 16px 40px}
+.sidebar{position:static;margin-bottom:24px;max-height:none;overflow:visible}
+.sidebar nav{display:flex;flex-wrap:wrap;gap:3px}
+.sidebar nav a{border:1px solid var(--line);padding:5px 9px;font-size:var(--fs-1)}
+.sidebar nav a[aria-current]{border:1px solid var(--gold)}
+.document{padding:28px 22px}
+.document pre{padding:14px}
+.site-footer{padding-inline:20px}
+}
+@media(prefers-reduced-motion:reduce){
+html{scroll-behavior:auto}
+}
+.nav-group{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px}
+.nav-group>summary,.nav-category>summary{cursor:pointer;list-style:revert;color:var(--gold);font:var(--fs-1) var(--mono);letter-spacing:.04em;padding:4px 0}
+.nav-group>summary{font-size:var(--fs-2);font-weight:600}
+.nav-group nav a{display:block;text-decoration:none;font-size:var(--fs-2);line-height:1.45;padding:4px 10px 4px 13px;border-left:1px solid var(--line);color:var(--muted)}
+.nav-group nav a:hover,.nav-group nav a[aria-current]{color:var(--gold);background:#d9b8780c;border-left:2px solid var(--gold)}
+.nav-category{margin:3px 0}
+.nav-category>summary{color:var(--muted);padding-left:8px}
+.nav-category nav{padding-left:8px}
+button:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.contents-button{display:none}
+.contents-dialog{border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--cream);padding:20px;position:fixed;inset:auto auto max(72px,calc(env(safe-area-inset-bottom) + 64px)) 16px;margin:0;width:calc(100% - 32px);max-width:440px;max-height:75dvh;overflow:auto;overscroll-behavior:contain;box-shadow:0 12px 48px #0007}
+.contents-dialog::backdrop{background:#0008}
+.contents-heading{position:sticky;top:0;background:var(--bg);z-index:1;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+.contents-heading h2{font:var(--fs-3) var(--serif);margin:0}
+.contents-close{font:var(--fs-4)/1 var(--sans);width:34px;height:34px;padding:0;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--gold);cursor:pointer}
+.contents-dialog h3{font:var(--fs-2) var(--mono);color:var(--gold);margin:12px 0 6px}
+.contents-sections{display:grid;gap:0;margin-bottom:14px}
+.contents-sections a{padding:3px 10px;line-height:1.45;color:var(--muted);font-size:var(--fs-2);text-decoration:none;border-left:1px solid var(--line);overflow-wrap:anywhere}
+.contents-dialog nav a{overflow-wrap:anywhere}
+@media(max-width:959.98px){
+html{scrollbar-gutter:stable}
+.layout{display:block;padding:22px 16px 96px}
+.sidebar,.toc{display:none}
+.contents-button{display:block;position:fixed;bottom:max(16px,env(safe-area-inset-bottom));left:16px;z-index:4;border:1px solid var(--line);border-radius:999px;padding:10px 16px;background:var(--bg);color:var(--gold);font:var(--fs-2) var(--sans);box-shadow:0 3px 18px #0005;cursor:pointer;min-height:44px}
+}
+.soloas-note{margin:24px 0 30px;padding:12px 16px;border-left:2px solid #a28a60;border-radius:0 8px 8px 0;background:#dfd2b844;color:var(--paper-muted)}
+.soloas-note-label{display:block;font:var(--fs-1) var(--mono);letter-spacing:.04em;margin-bottom:6px}
+.document blockquote p{font-size:var(--fs-2);margin:6px 0}
+.page-toc{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.page-toc .nav-title{margin:0 0 8px;letter-spacing:.04em}
+.sidebar .page-toc a{display:block;text-decoration:none;font-size:var(--fs-1);line-height:1.45;padding:3px 10px 3px 13px;color:var(--muted);border-left:1px solid var(--line);overflow-wrap:anywhere}
+.sidebar .page-toc a:hover{color:var(--gold);background:none;border-left:1px solid var(--gold)}
+.page-toc:not(:has(a)){display:none}
+.pager{display:flex;justify-content:space-between;gap:16px;margin-top:40px;padding-top:18px;border-top:1px solid var(--paper-line)}
+.document .pager a{display:flex;flex-direction:column;gap:2px;max-width:48%;text-decoration:none;color:#76551e}
+.pager-next{margin-left:auto;text-align:right}
+.pager span{font-size:var(--fs-1);color:var(--paper-muted)}
+.pager strong{font-size:var(--fs-2);font-weight:600;overflow-wrap:anywhere}
+.document .pager a:hover strong{color:#422d0d}
+.document img{cursor:zoom-in}
+dialog.lightbox{border:0;padding:0;background:transparent;width:100vw;max-width:100vw;height:100vh;max-height:100vh;overflow:auto}
+dialog.lightbox[open]{display:flex}
+dialog.lightbox::backdrop{background:#000c}
+dialog.lightbox img{display:block;margin:auto;max-width:96vw;max-height:96vh;cursor:zoom-in;border-radius:6px}
+dialog.lightbox img.zoomed{max-width:none;max-height:none;cursor:zoom-out}
+.sidebar .nav-pending,.contents-dialog .nav-pending{display:block;font-size:var(--fs-2);line-height:1.45;padding:4px 10px 4px 13px;border-left:1px solid var(--line);color:var(--muted);opacity:.55;cursor:not-allowed}
+.document .soloas-note p{font-size:var(--fs-2);line-height:1.7;margin:0}
+.document :is(h4,h5,h6){overflow-wrap:anywhere}
+.document .missing-image{font-size:var(--fs-1);color:var(--paper-muted)}
+{{chrome_css}}
+.ov-svg{display:block;width:100%;height:auto;margin:18px 0;font-family:inherit}
+.ov-tall{display:none}
+.ov-svg .ov-node{fill:rgba(162,138,96,.16);stroke:#a28a60;stroke-width:1.6}
+.ov-svg .ov-node.base{fill:rgba(48,40,30,.06);stroke:var(--paper-muted);stroke-width:1.2}
+.ov-svg .ov-node.soon{fill:rgba(48,40,30,.03);stroke:var(--paper-muted);stroke-width:1.4;stroke-dasharray:5 4}
+.ov-svg .ov-node.info{fill:none;stroke:var(--paper-muted);stroke-width:1;stroke-dasharray:2 4}
+.ov-svg .ov-name{fill:var(--ink);font-weight:600}
+.ov-svg .ov-sub{fill:var(--paper-muted);font-size:var(--fs-1)}
+.ov-svg .ov-layer{fill:#7d6330;font-size:var(--fs-1)}
+.ov-svg .ov-arrow{stroke:#a28a60;stroke-width:1.5;fill:none}
+.ov-svg .ov-head{fill:#a28a60}
+@media(max-width:720px){
+.ov-wide{display:none}
+.ov-tall{display:block;max-width:380px;margin:18px auto}
+}
+.ov-svg .ov-name{font-size:var(--fs-3)}
+.ov-svg .ov-name.sm{font-size:var(--fs-2)}
+.document .doc-aside{margin:18px 0;padding:10px 16px;border-left:2px solid #a28a60;color:var(--paper-muted);font-size:var(--fs-2);line-height:1.7}</style>
+</head>
+<body>
+<a class="skip" href="#main">{{skip}}</a>
+{{header}}
+<div class="layout"><aside class="sidebar">{{nav_desktop}}<nav class="page-toc" aria-label="{{on_page}}"><div class="nav-title">{{on_page}}</div>{{toc}}</nav></aside><main class="document" id="main" tabindex="-1">{{content}}</main></div>
+{{footer}}
+<button class="contents-button" type="button" aria-expanded="false" aria-controls="mobile-contents" aria-haspopup="dialog">{{menu}} <span aria-hidden="true">≡</span></button>
+<dialog class="contents-dialog" id="mobile-contents" aria-labelledby="contents-title">
+<div class="contents-heading"><h2 id="contents-title">{{menu}}</h2><button class="contents-close" type="button" aria-label="{{close}}" autofocus>×</button></div>
+<h3>{{page_list}}</h3><div>{{nav_mobile}}</div>
+<h3>{{on_page}}</h3><nav class="contents-sections" aria-label="{{on_page}}">{{toc}}</nav>
+</dialog>
+<script>
+(() => {
+  const button = document.querySelector('.contents-button');
+  const dialog = document.querySelector('.contents-dialog');
+  const narrow = matchMedia('(max-width:959.98px)');
+  let position;
+  let destination;
+  let previousOverflow;
+  button.addEventListener('click', () => {
+    position = [window.scrollX, window.scrollY];
+    previousOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    button.setAttribute('aria-expanded', 'true');
+    dialog.showModal();
+  });
+  dialog.querySelector('.contents-close').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', event => {
+    if (event.target === dialog) {
+      const rect = dialog.getBoundingClientRect();
+      if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
+    }
+    const link = event.target.closest('a');
+    if (!link) return;
+    if (link.getAttribute('href').startsWith('#')) {
+      event.preventDefault();
+      destination = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+      history.pushState(null, '', link.hash);
+    }
+    dialog.close();
+  });
+  dialog.addEventListener('close', () => {
+    button.setAttribute('aria-expanded', 'false');
+    document.documentElement.style.overflow = previousOverflow;
+    if (destination) {
+      destination.setAttribute('tabindex', '-1');
+      destination.focus({preventScroll:true});
+      destination.scrollIntoView({behavior:'instant'});
+      destination = null;
+    } else {
+      (narrow.matches ? button : document.getElementById('main')).focus({preventScroll:true});
+      window.scrollTo({left:position[0], top:position[1], behavior:'instant'});
+    }
+  });
+  narrow.addEventListener('change', () => { if (dialog.open && !narrow.matches) dialog.close(); });
+})();
+</script>
+<script>
+(() => {
+  const images = document.querySelectorAll('.document img');
+  if (!images.length) return;
+  const zh = (document.documentElement.lang || '').startsWith('zh');
+  const dialog = document.createElement('dialog');
+  dialog.className = 'lightbox';
+  dialog.setAttribute('aria-label', zh ? '图片预览' : 'Image preview');
+  const big = document.createElement('img');
+  dialog.append(big);
+  document.body.append(dialog);
+  const open = event => {
+    event.preventDefault();
+    const image = event.currentTarget;
+    big.src = image.currentSrc || image.src;
+    big.alt = image.alt;
+    big.classList.remove('zoomed');
+    dialog.showModal();
+  };
+  images.forEach(image => {
+    image.tabIndex = 0;
+    image.addEventListener('click', open);
+    image.addEventListener('keydown', event => { if (event.key === 'Enter') open(event); });
+  });
+  dialog.addEventListener('click', event => {
+    if (event.target === big) big.classList.toggle('zoomed');
+    else dialog.close();
+  });
+})();
+</script>
+</body>
+</html>
