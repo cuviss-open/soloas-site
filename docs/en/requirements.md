@@ -26,10 +26,10 @@
 ## Quick start
 
 1. **Create a project**: create a project with stock Unreal Engine.
-2. **Copy the plugins**: download from [Releases](https://github.com/cuviss-open/soloAS/releases), choosing one:
-   - Prebuilt package (recommended): `soloAS-0.1.1-ue5.8.3-win64.7z`; extract it into the project's `Plugins/` and it is ready to use. Windows 11 can extract it directly; Windows 10 needs 7-Zip installed first.
-   - Source package: `soloAS-0.1.1-ue5.8.3-source.zip` needs a C++ project and the Visual Studio toolchain; put it under `<Project>/Plugins/` as the "Plugin folders and dependencies" section below maps out.
-   - Debug symbols: `soloAS-0.1.1-ue5.8.3-win64-symbols.7z` is needed only to debug or read a crash stack; extract it over the same location.
+2. **Copy the plugins**: x.x.x is the soloAS version and uex.x.x the supported UE version; download the latest from the [Releases](https://github.com/cuviss-open/soloAS/releases/latest) page, choosing one:
+   - Prebuilt package (recommended): `soloAS-x.x.x-uex.x.x-win64.7z`; extract it into the project's `Plugins/` and it is ready to use. Windows 11 can extract it directly; Windows 10 needs 7-Zip installed first.
+   - Source package: `soloAS-x.x.x-uex.x.x-source.zip` needs a C++ project and the Visual Studio toolchain; put it under `<Project>/Plugins/` as the "Plugin folders and dependencies" section below maps out.
+   - Debug symbols: `soloAS-x.x.x-uex.x.x-win64-symbols.7z` is needed only to debug or read a crash stack; extract it over the same location.
 3. **Generate and build** (when using the source package): close the editor, right-click the `.uproject` and choose **Generate Visual Studio project files**, open the `.sln`, build `<ProjectName>Editor` for Win64 Development, then open the `.uproject`.
 4. **Enable the plugins**: `Angelscript` is enabled by default and enables `SoloASBridge` with it; when you use the GAS or Enhanced Input bindings, enable `AngelscriptGAS` or `AngelscriptEnhancedInput` in the editor's Plugins window and restart the editor when prompted.
 5. **Write code**: you can then write AngelScript (`.as`) code under `<Project>/Script/`; changing a script does not need an editor restart. Your first script follows.
