@@ -4,7 +4,7 @@
 
 ### Engine version
 
-- Currently adapted to UE 5.8.3; the official Launcher build is recommended.
+- Currently adapted to UE 5.8.4; the official Launcher build is recommended.
 - A source-built engine (the same adapted tag) is expected to be functionally equivalent in theory but is not guaranteed.
 
 ### Operating systems
