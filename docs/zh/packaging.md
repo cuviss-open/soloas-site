@@ -16,7 +16,7 @@
    & "$UE/Engine/Build/BatchFiles/RunUAT.bat" -nocompileuat -WaitForUATMutex BuildCookRun "-project=$Project" -NoP4 -platform=Win64 -clientconfig=Shipping -cook -stage -pak -package -archive "-archivedirectory=$Release" -nobuild -unattended -utf8output
    ```
 
-3. 检查包：`UnrealPak.exe <发布包中的.pak> -List` 查看包内文件，再启动发布目录里的游戏，进入用到脚本的关卡调用一个代表性函数。游戏正常退出不能证明脚本已加载。
+3. 检查包：命令中的 `<发布包中的.pak>` 表示发布包内的 Pak 文件，例如 `MyGame-Windows.pak`。运行 `UnrealPak.exe <发布包中的.pak> -List` 查看包内文件，再启动发布目录里的游戏，进入用到脚本的关卡调用一个代表性函数。游戏正常退出不能证明脚本已加载。
 
 ## 带源码打包
 
@@ -30,9 +30,11 @@
 
 不分发主体 AS 源码，并减少启动时的预处理和编译。函数仍由 VM 执行字节码，缓存里的程序数据可以被分析，不能当作加密或防逆向。
 
-1. 清掉要发布的项目 `Script/` 里旧的缓存文件：`Binds.Cache`、`Binds.Cache.Headers` 和 `PrecompiledScript*.Cache`。
+1. 清掉要发布的项目 `Script/` 里旧的缓存文件：`Binds.Cache`、`Binds.Cache.Headers` 和 `PrecompiledScript*.Cache`（即所有以 PrecompiledScript 开头的 .Cache 文件，如 `PrecompiledScript_Development.Cache`、`PrecompiledScript_Shipping.Cache`）。
 2. 按共同步骤的第 1 步编译 Shipping Game。
 3. 用 Shipping exe 生成匹配的预编译数据，不能用编辑器生成的。进程写完后会自己退出：
+
+   命令中的尖括号内容要替换为实际文件路径，例如构建输出目录中的 `MyGame.exe`。
 
    ```powershell
    & "<构建输出中的Shipping.exe>" -as-generate-precompiled-data -as-write-bind-db -unattended -nocrashreports -NullRHI -NoMessaging -NoASDebugServer -NoSound -NoSplash
@@ -46,7 +48,7 @@
    PrecompiledScript.Cache
    ```
 
-   输出在 `<项目>/Saved/Cooked/Windows/<项目名>/Script/`。
+   路径中的尖括号表示需要替换的项目目录或项目名，例如 `MyProject/Saved/Cooked/Windows/MyProject/Script/`。
 5. 按共同步骤的 1、2、3 重新编译、打包、检查；检查时确认包里有这三个缓存文件，没有项目 `.as`。
 
 - **无源码包需要哪些文件**：就是上面三个缓存文件，三个都存在且非空时，Shipping 构建默认只把这三个文件打进 Pak，不再带项目 `.as`。
@@ -56,7 +58,7 @@
 
 把可生成的 AS 函数转成 C++ 编进游戏，减少虚拟机开销；运行时仍保留字节码入口。代价是 C++ 编译时间更长、exe 更大。详见 [Hazelight 官方说明](https://angelscript.hazelight.se/cpp-bindings/precompiled-data/)。
 
-1. 清掉要发布的项目 `Script/` 里旧的缓存文件：`Binds.Cache`、`Binds.Cache.Headers` 和 `PrecompiledScript*.Cache`，以及项目模块里旧的 `AS_JITTED_CODE`。
+1. 清掉要发布的项目 `Script/` 里旧的缓存文件：`Binds.Cache`、`Binds.Cache.Headers` 和 `PrecompiledScript*.Cache`（即所有以 PrecompiledScript 开头的 .Cache 文件，如 `PrecompiledScript_Development.Cache`、`PrecompiledScript_Shipping.Cache`），以及项目模块里旧的 `AS_JITTED_CODE`。
 2. 按共同步骤的第 1、2 步编译 Shipping Game 并打包一次。
 3. 在包目录运行 Shipping exe 生成预编译数据，不能用编辑器生成的。进程写完后会自己退出：
 

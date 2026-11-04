@@ -48,6 +48,33 @@ for path in list(root.rglob('*.html'))+list(root.rglob('*.css')):
  if path.suffix=='.html':text=' '.join(re.findall(r'<style[^>]*>(.*?)</style>',text,flags=re.S)+re.findall(r'style="([^"]*)"',text))
  for kind,v in FS_DECL.findall(text):
   if not fs_ok(kind,v):errors.append(f'{path.relative_to(root)}: font sizes must use var(--fs-1..6): {kind}:{v.strip()[:40]}')
+# Shared public links must agree with the site configuration outside frozen articles.
+config = json.loads((root.parent / 'tools/site_config.json').read_text())
+for path in pages:
+ if 'learn' in path.relative_to(root).parts: continue
+ for link in pages[path].links:
+  if link.startswith('https://github.com/cuviss-open/soloAS') and not link.startswith(config['links']['repository']):
+   errors.append(f'{path.relative_to(root)}: repository link differs from site configuration')
+  if link.startswith('https://discord.gg/') and link != config['links']['discord']:
+   errors.append(f'{path.relative_to(root)}: Discord link differs from site configuration')
+# Release data is rendered from the frozen snapshot; detect manual drift.
+import render_support
+try:
+ render_support.render(render_support.load_snapshot(), check=True)
+except (ValueError, SystemExit) as exc:
+ errors.append(f'release data mismatch: {exc}')
+import render_release
+try:
+ render_release.run(check=True)
+ for lang in ('en', 'zh'):
+  html = (root / 'docs' / lang / 'requirements.html').read_text()
+  for asset in render_release.release_data()['assets']:
+   for value in (asset['name'], render_release.asset_size(asset['bytes'], lang)):
+    if value not in html: errors.append(f'{lang} requirements HTML missing release asset data: {value}')
+   if asset['sha256'] in html or str(asset['bytes']) in html:
+    errors.append(f"{lang} requirements HTML exposes precise metadata for {asset['name']}")
+except (ValueError, StopIteration, KeyError) as exc:
+ errors.append(f'release asset or license mismatch: {exc}')
 report={'pages':len(pages),'local_links':checked,'problems':len(errors),'errors':errors}
 root.joinpath('links.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
 print(json.dumps(report,ensure_ascii=False));raise SystemExit(bool(errors))

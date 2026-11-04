@@ -8,7 +8,7 @@ category: concepts
 After some experimenting, I have settled on a few rules for project structure.
 These are the rules I currently use for myself, just for reference.
 
-# Inheritance — Blueprint --> AS --> Cpp
+# Inheritance — Blueprint → AS → Cpp
 
 ## Every class inherited in AS comes through a Cpp middle layer.
 

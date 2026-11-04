@@ -6,20 +6,22 @@ The license of each plugin is listed in the table below. Preserve the license te
 
 When distributing a compiled project containing MPL-covered code, inform recipients how to obtain the corresponding source as required by [MPL-2.0](https://www.mozilla.org/en-US/MPL/2.0/).
 
+<!-- generated-license:start -->
 | Plugin or component | License |
 | --- | --- |
 | AngelscriptRuntime (including the AngelScript library) | MIT; the AngelScript library itself is zlib |
 | AngelscriptGAS | Apache-2.0 or MIT, at your option |
 | AngelscriptEnhancedInput | MIT |
 | Everything else in soloAS | MPL-2.0 |
+<!-- generated-license:end -->
 
-Note: For plugins inherited from the UE Haze fork, our modifications to them are licensed under that plugin’s original license. Everything else is MPL-2.0.
+Note: For plugins inherited from the UE-AS fork, our modifications to them are licensed under that plugin’s original license. Everything else is MPL-2.0.
 
 The license files shipped with each release are authoritative.
 
 ## Get involved
 
-Communicate through the [soloAS repository](https://github.com/cuviss-open/soloAS).
+Communicate through the [soloAS repository](https://github.com/cuviss-open/soloAS) or the [Discord community](https://discord.gg/D8W94mvMMU).
 
 ### Reporting issues
 

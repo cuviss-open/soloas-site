@@ -30,7 +30,7 @@ UStaticMeshComponent Mesh;
 
 // replace the component
 UPROPERTY(OverrideComponent = CharMoveComp)
-UMyCharacterMovementComponent DeeCharMoveComp;
+UMyCharacterMovementComponent CustomMoveComp;
 ```
 
 Nice as components are, relatively little is exposed to AS. UActorComponent has only a few overridable functions by default:

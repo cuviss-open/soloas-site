@@ -161,7 +161,7 @@ This does not mean the other approaches are bad. I am considering convenience. C
 - Less universal than cpp. Some modules still need cpp functions. My ini-reloading feature was unavailable in AS, so I wrote it in cpp.
 - Less friendly than Blueprints. It takes a bit more programming knowledge.
 
-# Bonus: Editor --> Angescript --> cpp --> .bat
+# Bonus: Editor → Angescript → cpp → .bat
 
 One last bonus: run a .bat file with one Editor click. Open up the channels, and those accumulated old batch files can fly again.
 

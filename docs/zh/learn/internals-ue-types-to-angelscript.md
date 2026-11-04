@@ -23,7 +23,7 @@ UE-Angelscript 是 UE 的一个分支，内容主要包括两个方面：
 
 ## 对 UE 源码的修改
 
-为了与 UE 一体化交互，HAZE 对 UE 源码修改了确实不少。
+为了与 UE 一体化交互，UE-AS fork 对 UE 源码修改了确实不少。
 
 所有修改通常由如下注释包裹，便于快速定位：  
 `// HAZE FIX`  
@@ -52,10 +52,10 @@ UE-Angelscript 插件的核心内容在引擎目录下的 Plugins/Angelscript �
 
 ```
 非编辑器模式
-AngelscriptLoader ------> AngelscriptCode -------> AngelScript (3rd)
+AngelscriptLoader ----→ AngelscriptCode -----→ AngelScript (3rd)
 
 编辑器模式
-AngelscriptLoader ------> AngelscriptEditor ------> AngelscriptCode -------> AngelScript (3rd)
+AngelscriptLoader ----→ AngelscriptEditor ----→ AngelscriptCode -----→ AngelScript (3rd)
 ```
 
 ## **简述 Angelscript 的引入**

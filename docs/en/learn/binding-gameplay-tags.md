@@ -16,10 +16,10 @@ For example, create an `.ini` file such as `Test.ini` in `Config/Tags`:
 
 ```config
 [/Script/GameplayTags.GameplayTagsList]
-GameplayTagList=(Tag="DfTest.Test1",DevComment="")
-GameplayTagList=(Tag="DfTest.Test2",DevComment="")
-GameplayTagList=(Tag="DfTest.Test3",DevComment="")
-GameplayTagList=(Tag="DfTest.Test4",DevComment="")
+GameplayTagList=(Tag="ExampleTest.Test1",DevComment="")
+GameplayTagList=(Tag="ExampleTest.Test2",DevComment="")
+GameplayTagList=(Tag="ExampleTest.Test3",DevComment="")
+GameplayTagList=(Tag="ExampleTest.Test4",DevComment="")
 ```
 
 Do not add `+` before GameplayTagList. Regenerate project files after adding an ini so it is recognized.
@@ -31,7 +31,7 @@ Do not add `+` before GameplayTagList. Regenerate project files after adding an 
 ## Fixing binding: make AS recognize cpp and DataTable GameplayTags
 
 After this change, DataTables allow live interaction.
-Without restarting the Editor, a deleted Tag still appears under `GameplayTags::`, but cannot be used. It will fail or return nothing; for example, `FGameplayTag::RequestGameplayTag(n"Test.DfContent.666",false)` returns None.
+Without restarting the Editor, a deleted Tag still appears under `GameplayTags::`, but cannot be used. It will fail or return nothing; for example, `FGameplayTag::RequestGameplayTag(n"Test.ExampleContent.666",false)` returns None.
 
 Reference:
 https://discord.com/channels/551756549962465299/551756549962465303/threads/1290243753852014633

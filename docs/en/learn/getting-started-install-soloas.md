@@ -452,6 +452,8 @@ Why? When a compilation error is hard to explain, or mysterious runtime errors a
 
 Here is the code. Consider backups before running it and accept the risk yourself. Working perfectly on my machine does not mean it will on yours. Remember that.
 
+In the commands, `*.sln` means all `.sln` solution files and `*.uproject` means all Unreal project files; for example, they can match `UE5.sln` and `MyGame.uproject`.
+
 Change `ENGINE_ROOT` to your engine directory, otherwise regenerating Visual Studio project files will not work!
 
 ```shell

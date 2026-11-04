@@ -4,11 +4,11 @@
 
 ## GAS：用脚本写技能和属性
 
-使用 Gameplay Ability System 时启用 `AngelscriptGAS`。源自 Haze fork 的同名插件，仅为适配做了少量修改，脚本用法与 Haze fork 一致。
+使用 Gameplay Ability System 时启用 `AngelscriptGAS`。基于 UE-AS fork 的同名插件，为适配做了少量修改，脚本用法保持一致。
 
 ## Enhanced Input：在脚本里响应输入
 
-使用 Input Action 和 Input Mapping Context 时启用 `AngelscriptEnhancedInput`。源自 Haze fork 的同名插件，仅为适配做了少量修改，脚本用法与 Haze fork 一致。
+使用 Input Action 和 Input Mapping Context 时启用 `AngelscriptEnhancedInput`。基于 UE-AS fork 的同名插件，为适配做了少量修改，脚本用法保持一致。
 
 ## SoloASPacks：补充你正在用的功能（待发布）
 

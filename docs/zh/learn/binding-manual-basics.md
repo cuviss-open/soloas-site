@@ -264,6 +264,7 @@ Constructor 是用来绑定构造函数的，Property 是用来绑定成员的�
 ### FAngelscriptType
 
 它的注释如下，可以理解为是一个描述 Angelscript 类型自身情况以及与其他类型如何沟通的结构体。
+这里的 `Binds_*.cpp` 表示不同名称的绑定源文件，例如 `Binds_FVector.cpp`。
 
 ```cpp
 /**
@@ -279,20 +280,20 @@ struct ANGELSCRIPTCODE_API FAngelscriptType : TSharedFromThis<FAngelscriptType>
 
 有这么一些相对的概念需要区分：
 
-- UCLASS 类型 --> UClass 类型信息
+- UCLASS 类型 → UClass 类型信息
   每一个 UObject 都有一个 UClass 对应。
 
-- USTRUCT 类型 --> UScriptStruct 类型信息
+- USTRUCT 类型 → UScriptStruct 类型信息
   每一个 USTRUCT 都有一个 UScriptStruct 对应。
   有时候表述为 UnrealUStruct，在一些文章里也会简化写 UStruct，但需注意语境，因为 UStruct 也是一个类型，是 UClass 和 UScriptStruct 的父类。
 
-- UENUM 类型 --> UEnum 类型信息
+- UENUM 类型 → UEnum 类型信息
   每一个 UENUM 都有一个 UEnum 对应。
 
-- `所有 Angelscript 里出现的类型` --> `asCTypeInfo` 类型信息
+- `所有 Angelscript 里出现的类型` → `asCTypeInfo` 类型信息
   asCTypeInfo 中的 plainUserData 可以存 UClass、UScriptStruct、UEnum 等各种各样的信息，看具体需求。
 
-- `所有 Angelscript 里出现的类型` --> `FAngelscriptType` 类型描述信息
+- `所有 Angelscript 里出现的类型` → `FAngelscriptType` 类型描述信息
   FAngelscriptType 和 asCTypeInfo 其实有些内容是可以对应的，但是 FAngelscriptType 可以高度自定义，而我们不想修改 asCTypeInfo，所以用 FAngelscriptType 。
 
 ### FAngelscriptTypeUsage
