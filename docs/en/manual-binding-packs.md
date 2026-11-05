@@ -4,11 +4,11 @@ Enable a binding pack when the project uses the matching gameplay system.
 
 ## GAS: write abilities and attributes in script
 
-Enable `AngelscriptGAS` when you use the Gameplay Ability System. A plugin of the same name derived from the Haze fork, with only a few modifications made for adaptation; script usage is the same as in the Haze fork.
+Enable `AngelscriptGAS` when you use the Gameplay Ability System. The plugin is derived from its UE-AS fork counterpart, with a few adaptation changes; script usage is the same as in the UE-AS fork.
 
 ## Enhanced Input: respond to input in script
 
-Enable `AngelscriptEnhancedInput` when you use Input Actions and Input Mapping Contexts. A plugin of the same name derived from the Haze fork, with only a few modifications made for adaptation; script usage is the same as in the Haze fork.
+Enable `AngelscriptEnhancedInput` when you use Input Actions and Input Mapping Contexts. The plugin is derived from its UE-AS fork counterpart, with a few adaptation changes; script usage is the same as in the UE-AS fork.
 
 ## SoloASPacks: add bindings for features you use (coming soon)
 

@@ -19,7 +19,7 @@ Earlier articles showed using mixins for checks such as `if(Obj.IsNull)` or `if(
 
 Even with fluent, chained mixin calls, it is still less concise than C++.
 
-After writing enough ifs, I decided to find time to simplify them. Although I am changing this restriction myself, I do not think HAZE’s decision to reject implicit conversion is wrong. Preferences differ.
+After writing enough ifs, I decided to find time to simplify them. Although I am changing this restriction myself, I do not think UE-AS fork’s decision to reject implicit conversion is wrong. Preferences differ.
 
 Looking through the code, fully enabling implicit conversion for UObject appeared technically difficult and seemed to require changes in Angelscript’s internals. I am unwilling to go that far. I might edit the UE-Angelscript plugin, but not casually change the original third-party Angelscript library.
 
@@ -97,8 +97,8 @@ I named this file `IfStatementSugar.h`:
 #include "Preprocessor/AngelscriptPreprocessor.h"
 
 /**
- * if (TestObj) --> if (TestObj != nullptr)
- * if (!TestObj) --> if (TestObj == nullptr)
+ * if (TestObj) → if (TestObj != nullptr)
+ * if (!TestObj) → if (TestObj == nullptr)
  *
  * Only support simple if statement, such as if (!TestObj) or if (TestObj)
  * to keep it simple, there is a simple rule:

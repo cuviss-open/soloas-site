@@ -262,7 +262,7 @@ OnTargetDataReadyCallbackDelegateHandle = DelegateWrapper.AddDynamicDelegate(InD
 ///////////////////////////////////////////////////////////////
 
 // Test only
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FDssTestDelegate_Dynamic, int, InInt,  float, InFloat);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FExampleTestDelegate_Dynamic, int, InInt,  float, InFloat);
 
 // FSimpleDelegate
 DECLARE_DYNAMIC_DELEGATE(FSimpleDelegate_Dynamic);
@@ -290,7 +290,7 @@ DELEGATE_WRAPPER_TwoParams(DelegateName, Param1Type, Param1Name, Param2Type, Par
 /// all Wrapper HERE ///////////////////////////////////////////////////////////////
 
 // Test only
-DELEGATE_WRAPPER_TwoParams(FDssTestDelegate, int, InInt,  float, InFloat)
+DELEGATE_WRAPPER_TwoParams(FExampleTestDelegate, int, InInt,  float, InFloat)
 
 // FSimpleDelegate
 DELEGATE_WRAPPER(FSimpleDelegate)
@@ -322,7 +322,7 @@ MULTICAST_DELEGATE_WRAPPER_BIND_TwoParams(DelegateName, Param1Type, Param1Name, 
 /// all Wrapper BIND here, don't include this file by other file
 ///////////////////////////////////////////////////////////////
  // Test only
-DELEGATE_WRAPPER_BIND_TwoParams(FDssTestDelegate, int, InInt,  float, InFloat, int, float32);
+DELEGATE_WRAPPER_BIND_TwoParams(FExampleTestDelegate, int, InInt,  float, InFloat, int, float32);
 
 // FSimpleDelegate DELEGATE_WRAPPER_BIND(FSimpleDelegate);
 

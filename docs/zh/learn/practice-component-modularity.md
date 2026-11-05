@@ -30,7 +30,7 @@ UStaticMeshComponent Mesh;
 
 // 替换组件
 UPROPERTY(OverrideComponent = CharMoveComp)
-UMyCharacterMovementComponent DeeCharMoveComp;
+UMyCharacterMovementComponent CustomMoveComp;
 ```
 
 不过，组件虽好，仍然会发现它暴露给 AS 的内容比较少。默认情况下，UActorComponent 只有几个可以覆写的函数：

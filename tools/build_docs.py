@@ -14,6 +14,7 @@ import json
 import subprocess
 from collections import Counter
 from datetime import datetime
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = json.loads((ROOT / 'tools/site_config.json').read_text())
@@ -22,8 +23,13 @@ CHROME_CSS = (ROOT / 'tools/site-chrome.css').read_text()
 PAGES = [
     ('overview', 'About soloAS', '项目介绍'),
     ('requirements', 'Environment setup and quick start', '环境配置与快速上手'),
+    ('soloas-menu', 'The SoloAS menu', 'SoloAS 菜单'),
+    ('changelog', 'Changelog', '更新日志'),
     ('migration', 'Migrating an existing AS project', '迁移已有 AS 项目'),
+    ('features', 'Feature overview', '功能一览'),
     ('core', 'Plugin core', '插件核心'),
+    ('ue-version-differences', 'Adaptation Differences Across Unreal Engine Versions', '不同 UE 版本的适配差异'),
+    ('api-differences', 'API differences between the latest soloAS and the UE-AS fork', 'soloAS 最新版与 UE-AS fork 的 API 差异'),
     ('manual-binding-packs', 'Manual binding packs', '手工绑定包'),
     ('packaging', 'Packaging', '项目打包'),
     ('license', 'Community', '社区贡献'),
@@ -33,11 +39,44 @@ PAGES = [
     ('auto-binding', 'Auto binding', '自动绑定'),
     ('ai-assisted', 'AI-assisted development', 'AI 辅助开发'),
 ]
+
+
+def secure_external_links(page):
+    page = page.replace("https://github.com/cuviss-open/soloAS", CONFIG["links"]["repository"])
+    page = page.replace("https://discord.gg/D8W94mvMMU", CONFIG["links"]["discord"])
+    def update(match):
+        tag = match.group(0)
+        href = re.search(r'\bhref="([^"]*)"', tag, re.I)
+        if not href:
+            return tag
+        parsed = urlsplit(html.unescape(href.group(1)))
+        if parsed.scheme not in {'', 'http', 'https'} or not parsed.netloc or (parsed.hostname or '').lower() == 'soloas.cuviss.com':
+            return re.sub(r'\s+target="[^"]*"', '', tag)
+        target = re.search(r'\s+target="[^"]*"', tag, re.I)
+        if target:
+            tag = tag[:target.start()] + ' target="_blank"' + tag[target.end():]
+        else:
+            tag = tag[:-1] + ' target="_blank">'
+        rel = re.search(r'\s+rel="([^"]*)"', tag, re.I)
+        tokens = set(rel.group(1).lower().split()) if rel else set()
+        tokens.update({'noopener', 'noreferrer'})
+        value = ' '.join(sorted(tokens))
+        if rel:
+            tag = tag[:rel.start()] + f' rel="{value}"' + tag[rel.end():]
+        else:
+            tag = tag[:-1] + f' rel="{value}">'
+        return tag
+    return re.sub(r'<a\b[^>]*>', update, page, flags=re.I)
 DOC_NAV = [
     ('page', 'overview', 'About soloAS', '项目介绍'),
     ('page', 'requirements', 'Environment setup and quick start', '环境配置与快速上手'),
+    ('page', 'soloas-menu', 'The SoloAS menu', 'SoloAS 菜单'),
+    ('page', 'changelog', 'Changelog', '更新日志'),
     ('page', 'migration', 'Migrating an existing AS project', '迁移已有 AS 项目'),
+    ('pending', 'features', 'Feature overview', '功能一览'),
     ('page', 'core', 'Plugin core', '插件核心'),
+    ('page', 'ue-version-differences', 'Adaptation Differences Across Unreal Engine Versions', '不同 UE 版本的适配差异'),
+    ('page', 'api-differences', 'API differences between the latest soloAS and the UE-AS fork', 'soloAS 最新版与 UE-AS fork 的 API 差异'),
     ('pending', 'extensions', 'Core extensions', '核心扩展'),
     ('pending', 'dynamic-modules', 'Feature Mods', '功能模组'),
     ('pending', 'core-manual-bindings', 'Manual binding core', '手工绑定核心'),
@@ -109,6 +148,8 @@ def inline(source, tokens=None):
 
 
 def render(source):
+    # HTML comments are source metadata and never appear in the built pages.
+    source = re.sub(r'<!--[\s\S]*?-->', '', source)
     lines = source.splitlines()
     output, toc, anchors = [], [], {}
     i = 0
@@ -299,8 +340,8 @@ def alternates(paths):
 
 def header(lang, paths, is_home=False):
     current = next(item for item in LANGUAGES if item['key'] == lang)
-    names = ('Home', 'Docs', 'Community', 'GitHub', 'Articles') if lang == 'en' else ('首页', '使用文档', '社区贡献', 'GitHub', '相关文章')
-    destinations = (current['home'], f'/docs/{lang}/overview.html', f'/docs/{lang}/license.html', 'https://github.com/cuviss-open/soloAS', f'/docs/{lang}/learn/index.html')
+    names = ('Home', 'Docs', 'Community', 'GitHub', 'Discord', 'Articles') if lang == 'en' else ('首页', '使用文档', '社区贡献', 'GitHub', 'Discord', '相关文章')
+    destinations = (current['home'], f'/docs/{lang}/overview.html', f'/docs/{lang}/license.html', 'https://github.com/cuviss-open/soloAS', CONFIG['links']['discord'], f'/docs/{lang}/learn/index.html')
     links = ''.join(f'<a href="{url}"' + (' aria-current="page"' if is_home and index == 0 else '') + f'>{name}</a>' for index, (name, url) in enumerate(zip(names, destinations)))
     languages = ''.join(f'<li><a href="{paths[item["key"]]}" lang="{item["tag"]}" hreflang="{item["tag"]}"' + (' aria-current="page"' if item['key'] == lang else '') + f'>{item["name"]}' + (' <span aria-hidden="true">✓</span>' if item['key'] == lang else '') + '</a></li>' for item in LANGUAGES)
     return f'<header class="site-header"><div class="site-nav"><div class="site-brand-row"><a class="wordmark" href="{current["home"]}" aria-label="soloAS">solo<em>AS</em></a><details class="language-menu"><summary aria-label="{("Language" if lang == "en" else "语言")}">{current["name"]}</summary><ul>{languages}</ul></details></div><nav aria-label="{("Main navigation" if lang == "en" else "主导航")}">{links}</nav></div></header>'
@@ -310,7 +351,7 @@ def footer(lang):
     item = next(item for item in LANGUAGES if item['key'] == lang)
     text = item['footer']
     label = text['navLabel']
-    date = datetime.now().date().isoformat()
+    date = CONFIG['legalUpdated']
 
     def paragraphs(values):
         return ''.join(f'<p>{inline(value.replace("{date}", date))}</p>' for value in values)
@@ -452,6 +493,17 @@ def pager_html(lang, name, seq_of, titles):
     return f'<nav class="pager" aria-label="{label}">{"".join(parts)}</nav>'
 
 
+def recommended_versions():
+    from render_support import load_snapshot, supported_versions
+    latest_by_minor = {}
+    for version in supported_versions(load_snapshot().get('support', {})):
+        latest_by_minor[version.rsplit('.', 1)[0]] = version
+    versions = list(latest_by_minor.values())
+    if len(versions) < 2:
+        raise ValueError('Two supported UE minor versions are required for the homepage')
+    return versions[-1], versions[-2]
+
+
 def main():
     template = (ROOT / 'docs/template.html').read_text()
     homepage = (ROOT / 'index.html').read_text()
@@ -475,7 +527,7 @@ def main():
     built = 0
     for lang in (item['key'] for item in LANGUAGES):
         learn_title = 'Articles' if lang == 'en' else '相关文章'
-        intro = ('This part is learning notes based on the original Haze fork. It is time-sensitive: soloAS has extended or reworked some of these areas, but some of the project practice here is still worth referring to. If you use only the two core plugins (Runtime and Bridge), you need these articles even more. For what soloAS adds, see the [documentation](../overview.md).' if lang == 'en' else '这部分是基于原始 Haze fork 的学习心得，具有时效性：soloAS 在部分问题上已经做了拓展处理，但有些项目实践的内容仍然值得参考。如果只使用核心两个插件（Runtime 与 Bridge），就更需要这些文章。soloAS 新增的能力见[使用文档](../overview.md)。')
+        intro = ('These time-sensitive learning notes use the UE-AS fork as their reference. SoloAS has extended or reworked some areas, while other project practices remain useful. If you use only the two core plugins (Runtime and Bridge), these articles are especially useful. For what soloAS adds, see the [documentation](../overview.md).' if lang == 'en' else '这部分学习心得以 UE-AS fork 为参照，内容具有时效性：soloAS 在部分问题上已经做了拓展处理，但有些项目实践仍然值得参考。如果只使用核心两个插件（Runtime 与 Bridge），这些文章会更有帮助。soloAS 新增的能力见[使用文档](../overview.md)。')
         index = f'# {learn_title}\n\n> {"Note: " if lang == "en" else "注："}{intro}\n\n'
         if learning[lang]:
             for category in CATEGORY_ORDER:
@@ -510,7 +562,7 @@ def main():
             depth = len(Path(name).parts) - 1
             prefix = '../' * depth
             nav = navigation(lang, name, learning)
-            values = dict(suffix='soloAS docs' if lang == 'en' else 'soloAS 文档', tokens=tokens[1], lang=next(item['tag'] for item in LANGUAGES if item['key'] == lang), title=html.escape(title), nav_desktop=nav, nav_mobile=nav, content=body, toc=toc, navigation='Documentation' if lang == 'en' else '使用文档', menu='Contents' if lang == 'en' else '目录', close='Close' if lang == 'en' else '关闭', page_list='Pages' if lang == 'en' else '页面列表', on_page='On this page' if lang == 'en' else '本页目录', skip='Skip to content' if lang == 'en' else '跳至正文', home=prefix + ('../../index.html' if lang == 'en' else '../../zh/index.html'), favicon=prefix + '../../favicon.svg')
+            values = dict(suffix='soloAS docs' if lang == 'en' else 'soloAS 文档', tokens=tokens[1], lang=next(item['tag'] for item in LANGUAGES if item['key'] == lang), title=html.escape(title), nav_desktop=nav, nav_mobile=nav, content=body, toc=toc, navigation='Documentation' if lang == 'en' else '使用文档', menu='Contents' if lang == 'en' else '目录', close='Close' if lang == 'en' else '关闭', page_list='Pages' if lang == 'en' else '页面列表', on_page='On this page' if lang == 'en' else '本页目录', skip='Skip to content' if lang == 'en' else '跳至正文', home=prefix + ('../../index.html' if lang == 'en' else '../../zh/index.html'), favicon=prefix + '../../favicon.svg', favicon_ico=prefix + '../../favicon.ico', apple_touch_icon=prefix + '../../apple-touch-icon.png')
             paths = {item['key']: f'/docs/{item["key"]}/{name}.html' for item in LANGUAGES}
             for item in LANGUAGES:
                 if name.startswith('learn/') and name != 'learn/index' and not (ROOT / 'docs' / item['key'] / (name + '.md')).exists():
@@ -524,20 +576,21 @@ def main():
                 page = re.sub(r'<button class="contents-button".*?</script>', '', page, flags=re.S)
             if name in PENDING_PAGES:
                 page = page.replace('</head>', '<meta name="robots" content="noindex">\n</head>', 1)
-            target.write_text(page)
+            target.write_text(secure_external_links(page))
             built += 1
     if (ROOT / 'docs/assets').is_dir():
         shutil.copytree(ROOT / 'docs/assets', ROOT / 'site/docs/assets', dirs_exist_ok=True)
     home_paths = {item['key']: item['home'] for item in LANGUAGES}
+    latest_ue, previous_ue = recommended_versions()
     for item in LANGUAGES:
         lang = item['key']
         source = ROOT / ('' if lang == 'en' else lang) / 'index.html'
-        values = dict(header=header(lang, home_paths, is_home=True), footer=footer(lang), alternates=alternates(home_paths), chrome_css=CHROME_CSS)
+        values = dict(header=header(lang, home_paths, is_home=True), footer=footer(lang), alternates=alternates(home_paths), chrome_css=CHROME_CSS, latest_ue=latest_ue, previous_ue=previous_ue)
         page = re.sub(r'\{\{(\w+)\}\}', lambda m: values[m[1]], source.read_text())
         target = ROOT / 'site' / item['home'].lstrip('/') / 'index.html'
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(page)
-    for name in ('favicon.svg', 'CNAME'):
+        target.write_text(secure_external_links(page))
+    for name in ('favicon.svg', 'favicon.ico', 'apple-touch-icon.png', 'CNAME'):
         shutil.copyfile(ROOT / name, ROOT / 'site' / name)
     print(f'Built {built} documentation pages and homepage assets in site/')
 

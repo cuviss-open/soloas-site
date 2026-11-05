@@ -452,6 +452,8 @@ InstalledBuild.txt 可以写上版本 AS_5.4 （好像没什么用）。
 
 以下是代码，运行之前，务必考虑做好备份，自行承担风险。我的电脑运行完美，不代表你的也可以，切记切记。
 
+命令中的 `*.sln` 表示所有 `.sln` 解决方案文件，`*.uproject` 表示所有 UE 项目文件；例如它们可匹配 `UE5.sln` 和 `MyGame.uproject`。
+
 注意！ `ENGINE_ROOT` 需要更改为你的自己引擎的目录！不然重新生成 Visual Studio 项目文件会不生效。
 
 ```shell

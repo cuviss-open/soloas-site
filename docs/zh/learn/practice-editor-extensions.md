@@ -161,7 +161,7 @@ class UExampleEditorMenuExtension : UScriptEditorMenuExtension
 - 没有 cpp 的万能。有些模块还是会调用 cpp 的函数，比如我写一个更新 ini 文件加载的功能，AS 里没有，就只能在 cpp 了写好了。
 - 没有蓝图的和蔼可亲。总得需要更多一些编程知识的。
 
-# 彩蛋：Editor --> Angescript --> cpp --> .bat
+# 彩蛋：Editor → Angescript → cpp → .bat
 
 最后给个不错的彩蛋——如何在 Editor 里一键调用 .bat 文件。从此打通任督二脉，一批古早的 .bat 可以再次飞翔。
 

@@ -102,22 +102,22 @@ TOptional 不用于持有 UObject，只用于值类型。（原因在于 UObject
 ```cpp
 	FString GetDataPtr(FTestStructInAS A)
 	{
-		return FDssDataPtr::Create(A).ToString();
+		return FExampleDataPtr::Create(A).ToString();
 	}
 
 	FString GetDataPtr_InputConst(const FTestStructInAS A)
 	{
-		return FDssDataPtr::Create(A).ToString();
+		return FExampleDataPtr::Create(A).ToString();
 	}
 
 	FString GetDataPtr_InputRef(FTestStructInAS& A)
 	{
-		return FDssDataPtr::Create(A).ToString();
+		return FExampleDataPtr::Create(A).ToString();
 	}
 
 	FString GetDataPtr_InputConstRef(const FTestStructInAS& A)
 	{
-		return FDssDataPtr::Create(A).ToString();
+		return FExampleDataPtr::Create(A).ToString();
 	}
 ```
 

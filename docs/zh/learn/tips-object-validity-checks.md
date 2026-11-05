@@ -19,7 +19,7 @@ UE-Angelscript 脚本里，`Obj` 的判空是经常的事，官方推荐的写�
 
 然后，即使用到了 mixin 函数将书写更改为链式调用的方式，相对于 C++的简洁，也还是逊色了。
 
-最终，在写了大量的 if 后，决定挑个时间，将其简化下来。（虽然我自己决定更改这种隐式转换的限制，但是我认为 HAZE 官方否决隐式转换的选择没错，毕竟各有偏好。）
+最终，在写了大量的 if 后，决定挑个时间，将其简化下来。（虽然我自己决定更改这种隐式转换的限制，但是我认为 UE-AS fork 官方否决隐式转换的选择没错，毕竟各有偏好。）
 
 经过查找相关的代码，我发现要彻底打开 UObject 类型的隐式转换还是有技术上的问题，似乎到修改到 Angelscript 的底层代码，这是我不愿意做的，我顶多修改 UE-Angelscript 这个插件，而不会轻易去修改原始的 Angelscript 第三方库。
 
@@ -97,8 +97,8 @@ for (FFile& File : Files)
 #include "Preprocessor/AngelscriptPreprocessor.h"
 
 /**
- * if (TestObj) --> if (TestObj != nullptr)
- * if (!TestObj) --> if (TestObj == nullptr)
+ * if (TestObj) → if (TestObj != nullptr)
+ * if (!TestObj) → if (TestObj == nullptr)
  *
  * Only support simple if statement, such as if (!TestObj) or if (TestObj)
  * to keep it simple, there is a simple rule:

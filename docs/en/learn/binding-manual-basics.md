@@ -264,6 +264,7 @@ Matching memory layouts allow surprising tricks. If C++ types M and N have ident
 ### FAngelscriptType
 
 Its comment is below. Think of a structure describing an AS type and its interaction with other types.
+Here `Binds_*.cpp` means binding source files with different names, such as `Binds_FVector.cpp`.
 
 ```cpp
 /**
@@ -279,20 +280,20 @@ struct ANGELSCRIPTCODE_API FAngelscriptType : TSharedFromThis<FAngelscriptType>
 
 Distinguish these pairs:
 
-- UCLASS type --> UClass type information
+- UCLASS type → UClass type information
   Each UObject has a corresponding UClass.
 
-- USTRUCT type --> UScriptStruct type information
+- USTRUCT type → UScriptStruct type information
   Each USTRUCT has a UScriptStruct.
   Sometimes called UnrealUStruct, or shortened to UStruct in articles. Context matters: UStruct is also the parent type of UClass and UScriptStruct.
 
-- UENUM type --> UEnum type information
+- UENUM type → UEnum type information
   Each UENUM has a UEnum.
 
-- `Every type appearing in Angelscript` --> `asCTypeInfo` information
+- `Every type appearing in Angelscript` → `asCTypeInfo` information
   Its plainUserData can hold UClass, UScriptStruct, UEnum or other information as needed.
 
-- `Every type appearing in Angelscript` --> `FAngelscriptType` description
+- `Every type appearing in Angelscript` → `FAngelscriptType` description
   Some information overlaps asCTypeInfo, but FAngelscriptType is highly customizable and avoids modifying asCTypeInfo.
 
 ### FAngelscriptTypeUsage

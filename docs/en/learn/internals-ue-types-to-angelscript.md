@@ -23,7 +23,7 @@ Prerequisites: C++, UE and Angelscript knowledge.
 
 ## Changes to UE source
 
-HAZE changed quite a lot of UE source to integrate closely with the engine.
+UE-AS fork changed quite a lot of UE source to integrate closely with the engine.
 
 Changes are generally enclosed by these comments for easy searching:
 `// HAZE FIX`
@@ -52,10 +52,10 @@ The directories and build scripts divide the plugin into these main parts. `Ange
 
 ```
 Non-editor mode
-AngelscriptLoader ------> AngelscriptCode -------> AngelScript (3rd)
+AngelscriptLoader ----→ AngelscriptCode -----→ AngelScript (3rd)
 
 Editor mode
-AngelscriptLoader ------> AngelscriptEditor ------> AngelscriptCode -------> AngelScript (3rd)
+AngelscriptLoader ----→ AngelscriptEditor ----→ AngelscriptCode -----→ AngelScript (3rd)
 ```
 
 ## **Bringing in Angelscript**

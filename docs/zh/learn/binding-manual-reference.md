@@ -44,7 +44,7 @@ AS_FORCE_LINK const FAngelscriptBinds::FBind Bind_FColor(FAngelscriptBinds::EOrd
 
 - `const FAngelscriptBinds::FBind` 是绑定类型，这个类型的作用就是初始化的时候，将其初始化的参数传给一个全局变量 `FAngelscriptBinds::GetBindArray()`，等到需要真正开始绑定的时候，调用 `FAngelscriptBinds::CallBinds()` 函数。
 
-可以看到，这里用了构造函数来传值 --> 收集到全局变量中 --> 等待合适时机按顺序批量注册。
+可以看到，这里用了构造函数来传值 → 收集到全局变量中 → 等待合适时机按顺序批量注册。
 
 - `Bind_FColor` 不多说了，一个变量名而已，只要不重名，不重要，一般不会再用到它，不过建议还是写成 `Bind_`加上类型的方式，方便检索。
 
@@ -168,6 +168,7 @@ UE 本身有类型描述，比如 UClass，而 AS 自身有 asITypeInfo，asITyp
 但是吧，如果还有其他类型信息，该放在哪里呢？比如这个类型是不是当作 UProperty、是不是可以放进模板里、是不是可以排序等等好多信息。
 
 这个时候，就创造了一个 FAngelscriptType 来描述了。FAngelscriptType 没有成员，全是成员函数，供子类实现。
+这里的 `Binds_*.cpp` 表示不同名称的绑定源文件，例如 `Binds_FVector.cpp`。
 
 ```cpp
 /**
@@ -1082,7 +1083,7 @@ UEnum GetEnumFromValue(?&in EnumValue) // 可以接受任何的输入（不包�
 UEnum GetEnumFromValue(?&out EnumValue) // 只能传引用，不能传临时的值。
 
 // 下方的调用，只能是　?&in　才可以，　否则就需要先定义一变量再传入
-DssReflect::GetEnumFromValue(ETimelineDirection::Backward);
+ExampleReflect::GetEnumFromValue(ETimelineDirection::Backward);
 
 // 要想让其可以接受const 的输入，需要这么
 UEnum GetEnumFromValue(const ?&in EnumValue) // 可以接受任何的输入（包括const)
@@ -1092,7 +1093,7 @@ UEnum GetEnumFromValue(const ?&in EnumValue) // 可以接受任何的输入（�
 
 可以研究以下示例得到使用方式，这种绑定方式的好处是——批量地绑定不同的函数给 AS，下方示例就是将多种 Delegate 的各种函数形式都绑定给 AS 了。
 
-也就是说，多个 AS 里的函数签名--> Cpp 里只写一个通用的函数与之对应。
+也就是说，多个 AS 里的函数签名→ Cpp 里只写一个通用的函数与之对应。
 
 ```cpp
 void CallSparseDelegate(asIScriptGeneric* InGeneric)

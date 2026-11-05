@@ -6,20 +6,22 @@
 
 分发包含 MPL-2.0 所覆盖代码的编译后项目时，须按 [MPL-2.0](https://www.mozilla.org/en-US/MPL/2.0/) 告知接收者如何获取相关源码。
 
+<!-- generated-license:start -->
 | 插件或组件 | 许可证 |
 | --- | --- |
 | AngelscriptRuntime（包含 AngelScript 库） | MIT；其中 AngelScript 库为 zlib |
 | AngelscriptGAS | Apache-2.0 或 MIT，任选其一 |
 | AngelscriptEnhancedInput | MIT |
 | soloAS 其他除上方外的所有内容 | MPL-2.0 |
+<!-- generated-license:end -->
 
-注：凡是从 UE Haze fork 继承来的插件，我们对其所做的修改沿用该插件原有的许可证；除此之外，皆为 MPL-2.0。
+注：凡是从 UE-AS fork 继承来的插件，我们对其所做的修改沿用该插件原有的许可证；除此之外，皆为 MPL-2.0。
 
 完整条款以随附的许可文件为准。
 
 ## 参与项目
 
-通过 [soloAS 仓库](https://github.com/cuviss-open/soloAS)交流。
+通过 [soloAS 仓库](https://github.com/cuviss-open/soloAS)或 [Discord 社区](https://discord.gg/D8W94mvMMU)交流。
 
 ### 报告问题
 

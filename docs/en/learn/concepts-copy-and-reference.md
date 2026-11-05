@@ -101,22 +101,22 @@ GetDataPtr is equivalent to GetDataPtr_InputConst and GetDataPtr_InputConstRef.
 ```cpp
 	FString GetDataPtr(FTestStructInAS A)
 	{
-		return FDssDataPtr::Create(A).ToString();
+		return FExampleDataPtr::Create(A).ToString();
 	}
 
 	FString GetDataPtr_InputConst(const FTestStructInAS A)
 	{
-		return FDssDataPtr::Create(A).ToString();
+		return FExampleDataPtr::Create(A).ToString();
 	}
 
 	FString GetDataPtr_InputRef(FTestStructInAS& A)
 	{
-		return FDssDataPtr::Create(A).ToString();
+		return FExampleDataPtr::Create(A).ToString();
 	}
 
 	FString GetDataPtr_InputConstRef(const FTestStructInAS& A)
 	{
-		return FDssDataPtr::Create(A).ToString();
+		return FExampleDataPtr::Create(A).ToString();
 	}
 ```
 

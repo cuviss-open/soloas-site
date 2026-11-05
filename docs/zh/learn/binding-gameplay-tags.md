@@ -16,10 +16,10 @@ UE-AS 5.4 版本，只支持了`Config/DefaultGameplayTags.ini` 以及 `Config/T
 
 ```config
 [/Script/GameplayTags.GameplayTagsList]
-GameplayTagList=(Tag="DfTest.Test1",DevComment="")
-GameplayTagList=(Tag="DfTest.Test2",DevComment="")
-GameplayTagList=(Tag="DfTest.Test3",DevComment="")
-GameplayTagList=(Tag="DfTest.Test4",DevComment="")
+GameplayTagList=(Tag="ExampleTest.Test1",DevComment="")
+GameplayTagList=(Tag="ExampleTest.Test2",DevComment="")
+GameplayTagList=(Tag="ExampleTest.Test3",DevComment="")
+GameplayTagList=(Tag="ExampleTest.Test4",DevComment="")
 ```
 
 注意 ，GameplayTagList 前不要加`+`， 新建一个 ini 需要重新生成项目文件才能识别到。
@@ -31,7 +31,7 @@ GameplayTagList=(Tag="DfTest.Test4",DevComment="")
 ## 解决绑定问题：让 AS 识别 cpp 里和 DataTable 里配置的 GameplayTag
 
 修改之后，用 DataTable 就能实现实时交互了。
-如果不重启 Editor，对于删除的 Tag ，AS 里的`GameplayTags::` 里还是会显示，但是此时已经不能使用，否则会报错或者获取不到，比如使用 `FGameplayTag::RequestGameplayTag(n"Test.DfContent.666",false) `就会返回 None 了
+如果不重启 Editor，对于删除的 Tag ，AS 里的`GameplayTags::` 里还是会显示，但是此时已经不能使用，否则会报错或者获取不到，比如使用 `FGameplayTag::RequestGameplayTag(n"Test.ExampleContent.666",false) `就会返回 None 了
 
 参考：
 https://discord.com/channels/551756549962465299/551756549962465303/threads/1290243753852014633

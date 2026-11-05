@@ -1,7 +1,10 @@
 {
   "languages": [
     {
-      "key": "en", "tag": "en", "name": "English", "home": "/",
+      "key": "en",
+      "tag": "en",
+      "name": "English",
+      "home": "/",
       "footer": {
         "contact": "Contact",
         "about": "About",
@@ -31,7 +34,10 @@
       }
     },
     {
-      "key": "zh", "tag": "zh-CN", "name": "简体中文", "home": "/zh/",
+      "key": "zh",
+      "tag": "zh-CN",
+      "name": "简体中文",
+      "home": "/zh/",
       "footer": {
         "contact": "联系",
         "about": "关于",
@@ -60,5 +66,28 @@
         ]
       }
     }
-  ]
+  ],
+  "legalUpdated": "2026-10-30",
+  "links": {
+    "repository": "https://github.com/cuviss-open/soloAS",
+    "discord": "https://discord.gg/D8W94mvMMU"
+  },
+  "licenseTables": {
+    "en": [
+      "| Plugin or component | License |",
+      "| --- | --- |",
+      "| AngelscriptRuntime (including the AngelScript library) | MIT; the AngelScript library itself is zlib |",
+      "| AngelscriptGAS | Apache-2.0 or MIT, at your option |",
+      "| AngelscriptEnhancedInput | MIT |",
+      "| Everything else in soloAS | MPL-2.0 |"
+    ],
+    "zh": [
+      "| 插件或组件 | 许可证 |",
+      "| --- | --- |",
+      "| AngelscriptRuntime（包含 AngelScript 库） | MIT；其中 AngelScript 库为 zlib |",
+      "| AngelscriptGAS | Apache-2.0 或 MIT，任选其一 |",
+      "| AngelscriptEnhancedInput | MIT |",
+      "| soloAS 其他除上方外的所有内容 | MPL-2.0 |"
+    ]
+  }
 }

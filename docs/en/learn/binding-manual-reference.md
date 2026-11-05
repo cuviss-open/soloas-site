@@ -44,7 +44,7 @@ AS_FORCE_LINK const FAngelscriptBinds::FBind Bind_FColor(FAngelscriptBinds::EOrd
 
 - `const FAngelscriptBinds::FBind` is the registration type. During initialization it passes its arguments to the global `FAngelscriptBinds::GetBindArray()`. When registration should actually run, `FAngelscriptBinds::CallBinds()` is called.
 
-The constructor receives data --> a global collects it --> callbacks run in order at the appropriate time.
+The constructor receives data → a global collects it → callbacks run in order at the appropriate time.
 
 - `Bind_FColor` is only a variable name. It rarely needs referring to again, so just avoid collisions. I recommend `Bind_` plus the type name for easy searching.
 
@@ -168,6 +168,7 @@ UE has descriptions such as UClass. AS has asITypeInfo, whose plainUserData can 
 But where do we put additional details: whether the type can be a UProperty, a template subtype, sorted, and so on?
 
 FAngelscriptType describes these. It has no data members, only methods implemented by subclasses.
+Here `Binds_*.cpp` means binding source files with different names, such as `Binds_FVector.cpp`.
 
 ```cpp
 /**
@@ -1082,7 +1083,7 @@ UEnum GetEnumFromValue(?&in EnumValue) // accepts any input (except const)
 UEnum GetEnumFromValue(?&out EnumValue) // takes references only, not temporary values.
 
 // the call below only works with ?&in; otherwise you have to define a variable first and pass it in
-DssReflect::GetEnumFromValue(ETimelineDirection::Backward);
+ExampleReflect::GetEnumFromValue(ETimelineDirection::Backward);
 
 // to let it accept const input, write it like this
 UEnum GetEnumFromValue(const ?&in EnumValue) // accepts any input (including const)
@@ -1092,7 +1093,7 @@ UEnum GetEnumFromValue(const ?&in EnumValue) // accepts any input (including con
 
 Study this example for usage. It binds multiple AS function forms to one generic native callback; below, several Delegate method forms share it.
 
-Several AS signatures --> one general Cpp implementation.
+Several AS signatures → one general Cpp implementation.
 
 ```cpp
 void CallSparseDelegate(asIScriptGeneric* InGeneric)
