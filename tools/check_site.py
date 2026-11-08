@@ -66,13 +66,6 @@ except (ValueError, SystemExit) as exc:
 import render_release
 try:
  render_release.run(check=True)
- for lang in ('en', 'zh'):
-  html = (root / 'docs' / lang / 'requirements.html').read_text()
-  for asset in render_release.release_data()['assets']:
-   for value in (asset['name'], render_release.asset_size(asset['bytes'], lang)):
-    if value not in html: errors.append(f'{lang} requirements HTML missing release asset data: {value}')
-   if asset['sha256'] in html or str(asset['bytes']) in html:
-    errors.append(f"{lang} requirements HTML exposes precise metadata for {asset['name']}")
 except (ValueError, StopIteration, KeyError) as exc:
  errors.append(f'release asset or license mismatch: {exc}')
 report={'pages':len(pages),'local_links':checked,'problems':len(errors),'errors':errors}

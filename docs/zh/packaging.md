@@ -1,82 +1,51 @@
 # 项目打包
 
-命令以 Windows PowerShell 为例，`$UE`、`$Project`、`$Target`、`$Release` 分别是引擎根目录、`.uproject` 完整路径、Game target 名和发布目录。
+## 打包入口
 
-## 共同步骤
-
-1. 编译 Shipping Game：
-
-   ```powershell
-   & "$UE/Engine/Build/BatchFiles/Build.bat" $Target Win64 Shipping "-Project=$Project" -WaitMutex -NoHotReload -NoUBA
-   ```
-
-2. 用 Platforms → Windows → Package Project 选择 Shipping，或执行 BuildCookRun：
-
-   ```powershell
-   & "$UE/Engine/Build/BatchFiles/RunUAT.bat" -nocompileuat -WaitForUATMutex BuildCookRun "-project=$Project" -NoP4 -platform=Win64 -clientconfig=Shipping -cook -stage -pak -package -archive "-archivedirectory=$Release" -nobuild -unattended -utf8output
-   ```
-
-3. 检查包：命令中的 `<发布包中的.pak>` 表示发布包内的 Pak 文件，例如 `MyGame-Windows.pak`。运行 `UnrealPak.exe <发布包中的.pak> -List` 查看包内文件，再启动发布目录里的游戏，进入用到脚本的关卡调用一个代表性函数。游戏正常退出不能证明脚本已加载。
-
-## 带源码打包
-
-适用于先把游戏交付跑通，或允许玩家查看、修改脚本：运行时读取 `.as` 并编译，启动时有脚本编译时间。Pak 可以提取出源码。
-
-直接按共同步骤的 1、2、3 执行。
-
-没有预编译缓存时，项目的 `Script/` 会被一起打进 Pak。
+1. 地图、烘焙、Pak/IoStore、目标等选项在 **SoloAS → UE 打包设置** 中设置，这里打开 UE 原生的“项目设置 → 项目 → 打包”页面。
+2. **SoloAS → 打包项目…** 打开 UE 项目启动器，按 UE 原生流程打包。脚本以源码形式随包交付。
+3. 需要字节码或半 AOT 时，在 **SoloAS → soloAS 打包设置** 中选择交付方式和输出目录，再按下文使用命令行或 AI 辅助打包。
 
 ## 字节码打包
 
-不分发主体 AS 源码，并减少启动时的预处理和编译。函数仍由 VM 执行字节码，缓存里的程序数据可以被分析，不能当作加密或防逆向。
+不分发主体 AS 源码，并减少启动时的预处理和编译。函数仍由 VM 执行字节码，不是原生加速；缓存里的程序数据可以被分析，不能当作加密或防逆向。
 
-1. 清掉要发布的项目 `Script/` 里旧的缓存文件：`Binds.Cache`、`Binds.Cache.Headers` 和 `PrecompiledScript*.Cache`（即所有以 PrecompiledScript 开头的 .Cache 文件，如 `PrecompiledScript_Development.Cache`、`PrecompiledScript_Shipping.Cache`）。
-2. 按共同步骤的第 1 步编译 Shipping Game。
-3. 用 Shipping exe 生成匹配的预编译数据，不能用编辑器生成的。进程写完后会自己退出：
+在 soloAS 打包设置选择“字节码”，或在 CLI 方案里设置 `deliveryMode=bytecode`，然后运行 soloAS 打包 CLI。工具会生成匹配的预编译缓存，收集到发布副本的 `Script/` 并在打包后检查。基础缓存包括 `Binds.Cache`、`Binds.Cache.Headers` 和 `PrecompiledScript.Cache`；包内不应包含项目 `.as` 源码。
 
-   命令中的尖括号内容要替换为实际文件路径，例如构建输出目录中的 `MyGame.exe`。
+- **缓存与 exe 不匹配**：没有源码的包会报 `ASR-PRECOMPILED-NO-SOURCE: No compatible precompiled script cache and no script source files are available.`，由维护者重新发布匹配的缓存。`Loaded angelscript precompiled data was for a different build configuration. Discarding all precompiled data.` 表示缓存是用另一套配置生成的。
 
-   ```powershell
-   & "<构建输出中的Shipping.exe>" -as-generate-precompiled-data -as-write-bind-db -unattended -nocrashreports -NullRHI -NoMessaging -NoASDebugServer -NoSound -NoSplash
-   ```
+## 半 AOT 打包（static JIT）
 
-4. 把实际写出的三个文件原样复制回要发布的项目的 `Script/`，不要混用另一轮生成的文件，找不到这三个文件就停止：
+把可生成的 AS 函数转成 C++ 编进 Game，减少这些函数的 VM 开销；AS 运行时、反射和字节码入口仍然保留。代价是更长的 C++ 编译时间和更大的可执行文件，不保证所有函数都更快。
 
-   ```text
-   Binds.Cache
-   Binds.Cache.Headers
-   PrecompiledScript.Cache
-   ```
+在 soloAS 打包设置选择“半 AOT”，或在 CLI 方案里设置 `deliveryMode=semi_aot`，然后运行 soloAS 打包 CLI。生成预编译数据的同一轮会输出 JIT 的 C++ 文件，`sync-jit` 命令把它们放进 C++ 消费模块；消费模块不存在时会自动生成并登记到 Game target，之后每次生成都自动同步并重编 Game。顺序固定为“生成、重编 Game、打包”，只重新 cook 不会把 C++ 链进 exe。`check-package` 命令应判定为“半 AOT 包”：JIT 消费模块已经链进 exe，包里是匹配的缓存。
 
-   路径中的尖括号表示需要替换的项目目录或项目名，例如 `MyProject/Saved/Cooked/Windows/MyProject/Script/`。
-5. 按共同步骤的 1、2、3 重新编译、打包、检查；检查时确认包里有这三个缓存文件，没有项目 `.as`。
+- **怎样进包**：JIT 的 C++ 通过正常编译进入 exe，不靠放进 Pak；缓存按字节码打包的规则进包。
+- **缓存与 exe 的 JIT 不匹配**：会提示 `Loaded angelscript precompiled data does not match the transpiled C++ in the game binary. Transpiled code will not be used!`，改走缓存里的字节码，主要影响性能。模块缓存集合不匹配时可能整组失效。
 
-- **无源码包需要哪些文件**：就是上面三个缓存文件，三个都存在且非空时，Shipping 构建默认只把这三个文件打进 Pak，不再带项目 `.as`。
-- **旧缓存会被拒绝**：缓存与 exe 不匹配时，没有源码的包会报 `ASR-PRECOMPILED-NO-SOURCE: No compatible precompiled script cache and no script source files are available.`，需要重新生成并重新发布匹配的缓存。`Loaded angelscript precompiled data was for a different build configuration. Discarding all precompiled data.` 表示缓存是用另一套配置生成的。
+## 用脚本和 CI 打包
 
-## 半 AOT 打包
+随插件提供的 `soloas_package.py` 与原生设置页读取同一份工程配置，可在脚本或 CI 中读取、修改配置、管理方案、执行检查、打包和查询结果。soloAS CLI 自动化目前仅支持 Win64。`<Tool>` 是已安装插件里的 `Build/PackagingTool/soloas_package.py`：
 
-把可生成的 AS 函数转成 C++ 编进游戏，减少虚拟机开销；运行时仍保留字节码入口。代价是 C++ 编译时间更长、exe 更大。详见 [Hazelight 官方说明](https://angelscript.hazelight.se/cpp-bindings/precompiled-data/)。
+```text
+python <Tool> --project <Game.uproject> profiles list --json
+python <Tool> --project <Game.uproject> config read --platform Win64 --json
+python <Tool> --project <Game.uproject> precheck --json
+python <Tool> --project <Game.uproject> run --json
+python <Tool> --project <Game.uproject> status --job <id> --json
+```
 
-1. 清掉要发布的项目 `Script/` 里旧的缓存文件：`Binds.Cache`、`Binds.Cache.Headers` 和 `PrecompiledScript*.Cache`（即所有以 PrecompiledScript 开头的 .Cache 文件，如 `PrecompiledScript_Development.Cache`、`PrecompiledScript_Shipping.Cache`），以及项目模块里旧的 `AS_JITTED_CODE`。
-2. 按共同步骤的第 1、2 步编译 Shipping Game 并打包一次。
-3. 在包目录运行 Shipping exe 生成预编译数据，不能用编辑器生成的。进程写完后会自己退出：
+不带 `--profile` 时使用工程默认值。需要可重复的命名方案时，先创建，再指定方案运行：
 
-   ```powershell
-   & "<构建输出中的Shipping.exe>" -as-generate-precompiled-data -as-write-bind-db -unattended -nocrashreports -NullRHI -NoMessaging -NoASDebugServer -NoSound -NoSplash
-   ```
+```text
+python <Tool> --project <Game.uproject> profiles save --name Shipping-bytecode --overrides '{"configuration":"Shipping","deliveryMode":"bytecode"}' --json
+python <Tool> --project <Game.uproject> run --profile Shipping-bytecode --json
+```
 
-   保存包根目录下生成的整个 `AS_JITTED_CODE/`，以及 `Binds.Cache`、`Binds.Cache.Headers`、`PrecompiledScript.Cache` 三个文件。
-4. 把 `AS_JITTED_CODE/` 原样复制到游戏的 C++ 模块，例如 `Source/MyGame/AS_JITTED_CODE/`。不要改文件后缀，也不要手工 include 生成的 cpp。
-5. 在这个模块的 `Build.cs` 里加上 `AngelscriptCode`，以及脚本用到的原生模块依赖。同时用 GAS 和 Enhanced Input 的示例：
+`precheck` 报告配置、可选工具链探测和待检查项；`run` 在构建前执行完整检查。脚本返回可供 CI 读取的结构化进度和结果。配置写入会返回修改差异；每次执行都记录对应的方案和输入版本，便于复查和重复构建。
 
-   ```csharp
-   PrivateDependencyModuleNames.AddRange(new[] { "AngelscriptCode", "EnhancedInput", "GameplayAbilities", "GameplayTasks", "AngelscriptGAS", "AngelscriptEnhancedInput" });
-   ```
-6. 改了 `Build.cs` 后重新生成项目文件。
-7. 把第 3 步保存的三个缓存文件放回要发布的项目的 `Script/`，必须在打包之前放回。然后按共同步骤的 1、2、3 重新编译、打包、检查；检查时确认包里有这三个缓存文件、没有项目 `.as`，运行时代表玩法正常。
+## 让 AI 帮你准备和执行打包
 
-- **缓存和 exe 必须配套**：只为加入这批生成的 C++ 而重编，不需要重新生成缓存；改了脚本、引擎、插件或其他 C++ 后，要从第 2 步重新开始。
-- **缓存要在打包前放回**：打包后才放回缓存不会更新已经生成的 Pak。
+在 **SoloAS → AI 辅助开发** 完成连接后，告诉 AI 你的交付目标，例如“创建 Windows Shipping 字节码方案，检查配置并打包”。AI 会读取当前工程设置，给出需要的修改和差异，保存方案并启动打包；你可以继续查询进度、定位失败的阶段和查看最终结果。AI 和命令行使用同一套打包流程，并读取原生设置页写入的工程默认配置。
 
-打包流程可以进一步优化，拟在后续增加特性时提供。
+连接 MCP 后，可使用 `soloas_package_config`、`soloas_package_config_write`、`soloas_package_profiles_save`、`soloas_package_precheck`、`soloas_package_run`、`soloas_package_status` 和 `soloas_package_cancel` 完成相同流程。

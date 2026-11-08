@@ -21,7 +21,6 @@
         "updated": "Updated {date}",
         "termsParagraphs": [
           "See the [Community](/docs/en/license.html) page for each plugin's license.",
-          "You may reference site content with attribution.",
           "The software and documentation are provided \"as is\" without warranty.",
           "Unreal Engine and other third-party projects and names are trademarks of their respective owners. soloAS is not affiliated with Epic Games or Hazelight.",
           "Attribution and showcase requests are non-binding, as described on the [home page](/#conventions-title)."
@@ -30,6 +29,13 @@
           "This site uses no analytics, cookies or tracking, and has no forms or third-party scripts.",
           "The site is hosted on GitHub Pages. GitHub may process standard access logs under its [Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).",
           "What you send by email is shared with us; what you send through GitHub Issues is shared with GitHub."
+        ],
+        "copyrightShort": "All rights reserved",
+        "copyright": "Copyright",
+        "copyrightParagraphs": [
+          "The text on this website, including the documentation and articles, is owned by Cuviss Studio.",
+          "Brief quotations with attribution are allowed. Republishing, excerpting or translating requires prior permission; please get in touch through Contact.",
+          "Plugin source code is licensed under its respective open-source licenses and is not covered by this section."
         ]
       }
     },
@@ -54,7 +60,6 @@
         "updated": "更新于 {date}",
         "termsParagraphs": [
           "各插件的许可证见[社区贡献](/docs/zh/license.html)页。",
-          "网站内容可在注明来源后引用。",
           "软件和文档按“现状”提供，不作任何保证。",
           "Unreal Engine 等第三方项目及名称相关商标归各自所有者所有。soloAS 与 Epic Games、Hazelight 均无关联。",
           "致谢和案例展示请求均不具约束力，详见[首页说明](/zh/#conventions-title)。"
@@ -63,11 +68,18 @@
           "本网站不使用分析工具、Cookie 或跟踪，也没有数据表单或第三方脚本。",
           "网站托管于 GitHub Pages。GitHub 可能按其[隐私声明](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)处理标准访问日志。",
           "通过邮件发送的内容会提供给我们；通过 GitHub Issues 发送的内容会提供给 GitHub。"
+        ],
+        "copyrightShort": "未经许可禁止转载",
+        "copyright": "版权",
+        "copyrightParagraphs": [
+          "本站文字内容（包括使用文档和相关文章）的版权归 Cuviss Studio 所有。",
+          "注明来源后可少量引用；转载、摘编或翻译须先取得许可，请通过“联系”与我们联系。",
+          "插件源代码按各自的开源许可证授权，不受本节限制。"
         ]
       }
     }
   ],
-  "legalUpdated": "2026-10-30",
+  "legalUpdated": "2026-11-08",
   "links": {
     "repository": "https://github.com/cuviss-open/soloAS",
     "discord": "https://discord.gg/D8W94mvMMU"

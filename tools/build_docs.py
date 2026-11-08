@@ -73,17 +73,17 @@ DOC_NAV = [
     ('page', 'soloas-menu', 'The SoloAS menu', 'SoloAS 菜单'),
     ('page', 'changelog', 'Changelog', '更新日志'),
     ('page', 'migration', 'Migrating an existing AS project', '迁移已有 AS 项目'),
-    ('pending', 'features', 'Feature overview', '功能一览'),
+    ('page', 'features', 'Feature overview', '功能一览'),
     ('page', 'core', 'Plugin core', '插件核心'),
     ('page', 'ue-version-differences', 'Adaptation Differences Across Unreal Engine Versions', '不同 UE 版本的适配差异'),
     ('page', 'api-differences', 'API differences between the latest soloAS and the UE-AS fork', 'soloAS 最新版与 UE-AS fork 的 API 差异'),
-    ('pending', 'extensions', 'Core extensions', '核心扩展'),
+    ('page', 'extensions', 'Core extensions', '核心扩展'),
     ('pending', 'dynamic-modules', 'Feature Mods', '功能模组'),
     ('pending', 'core-manual-bindings', 'Manual binding core', '手工绑定核心'),
     ('pending', 'auto-binding', 'Auto binding', '自动绑定'),
     ('page', 'manual-binding-packs', 'Manual binding packs', '手工绑定包'),
     ('page', 'packaging', 'Packaging', '项目打包'),
-    ('pending', 'ai-assisted', 'AI-assisted development', 'AI 辅助开发'),
+    ('page', 'ai-assisted', 'AI-assisted development', 'AI 辅助开发'),
 ]
 PENDING_PAGES = {item[1] for item in DOC_NAV if item[0] == 'pending'}
 CATEGORY_ORDER = ('getting-started', 'concepts', 'tips', 'essays', 'practice', 'internals', 'binding')
@@ -358,7 +358,8 @@ def footer(lang):
 
     terms = paragraphs(text['termsParagraphs']) + f'<p>{html.escape(text["updated"].format(date=date))}</p>'
     privacy = paragraphs(text['privacyParagraphs']) + f'<p>{html.escape(text["updated"].format(date=date))}</p>'
-    return f'''<footer class="site-footer" id="site-footer"><div class="site-footer-inner"><span>© {datetime.now().year} soloAS by Cuviss Studio</span><nav aria-label="{label}"><a href="#contact" aria-haspopup="dialog" aria-controls="contact">{html.escape(text['contact'])}</a><span aria-hidden="true">·</span><a href="#about" aria-haspopup="dialog" aria-controls="about">{html.escape(text['about'])}</a></nav></div></footer>
+    copyright = paragraphs(text['copyrightParagraphs'])
+    return f'''<footer class="site-footer" id="site-footer"><div class="site-footer-inner"><span>© {datetime.now().year} soloAS by Cuviss Studio · {html.escape(text['copyrightShort'])}</span><nav aria-label="{label}"><a href="#contact" aria-haspopup="dialog" aria-controls="contact">{html.escape(text['contact'])}</a><span aria-hidden="true">·</span><a href="#about" aria-haspopup="dialog" aria-controls="about">{html.escape(text['about'])}</a></nav></div></footer>
 <div class="site-dialog-root">
 <dialog class="site-dialog" id="contact" aria-modal="true" aria-labelledby="contact-title" tabindex="-1" data-site-dialog>
   <div class="site-dialog-panel">
@@ -374,6 +375,7 @@ def footer(lang):
     <a class="site-dialog-close-fallback" href="#site-footer" aria-label="{html.escape(text['close'], quote=True)}" data-dialog-close-link>×</a>
     <button class="site-dialog-close-button" type="button" aria-label="{html.escape(text['close'], quote=True)}" data-dialog-close hidden>×</button>
     <h2 id="about-title">{html.escape(text['about'])}</h2>
+    <section class="site-dialog-section" aria-labelledby="copyright-title"><h3 id="copyright-title">{html.escape(text['copyright'])}</h3>{copyright}</section>
     <section class="site-dialog-section" aria-labelledby="terms-title"><h3 id="terms-title">{html.escape(text['terms'])}</h3>{terms}</section>
     <section class="site-dialog-section" aria-labelledby="privacy-title"><h3 id="privacy-title">{html.escape(text['privacy'])}</h3>{privacy}</section>
   </div>
@@ -493,17 +495,6 @@ def pager_html(lang, name, seq_of, titles):
     return f'<nav class="pager" aria-label="{label}">{"".join(parts)}</nav>'
 
 
-def recommended_versions():
-    from render_support import load_snapshot, supported_versions
-    latest_by_minor = {}
-    for version in supported_versions(load_snapshot().get('support', {})):
-        latest_by_minor[version.rsplit('.', 1)[0]] = version
-    versions = list(latest_by_minor.values())
-    if len(versions) < 2:
-        raise ValueError('Two supported UE minor versions are required for the homepage')
-    return versions[-1], versions[-2]
-
-
 def main():
     template = (ROOT / 'docs/template.html').read_text()
     homepage = (ROOT / 'index.html').read_text()
@@ -558,6 +549,9 @@ def main():
             target = ROOT / 'site/docs' / lang / (name + '.html')
             target.parent.mkdir(parents=True, exist_ok=True)
             body, toc = render(source)
+            if name == 'ue-version-differences':
+                body = re.sub(r'(<h2 id="[^"]+">.*?)(?=<h2 id=|$)',
+                              r'<section class="version-section">\1</section>', body, flags=re.S)
             body += pager_html(lang, name, seq_of, titles)
             depth = len(Path(name).parts) - 1
             prefix = '../' * depth
@@ -569,6 +563,8 @@ def main():
                     paths[item['key']] = f'/docs/{item["key"]}/learn/index.html'
             values.update(header=header(lang, paths), footer=footer(lang), alternates=alternates(paths), chrome_css=CHROME_CSS)
             page = re.sub(r'\{\{(\w+)\}\}', lambda m: values[m[1]], template)
+            if name == 'ue-version-differences':
+                page = page.replace('</style>', '.version-section{border-left:4px solid var(--paper-line);background:var(--paper);color:var(--ink);padding:1px 20px 20px;margin:32px 0}.version-section h2{margin-top:20px}</style>', 1)
             if name == 'license':
                 page = page.replace('class="layout"', 'class="layout" style="display:block;max-width:1000px"')
                 page = re.sub(r'<aside class="sidebar">.*?</aside>', '', page, flags=re.S)
@@ -581,12 +577,13 @@ def main():
     if (ROOT / 'docs/assets').is_dir():
         shutil.copytree(ROOT / 'docs/assets', ROOT / 'site/docs/assets', dirs_exist_ok=True)
     home_paths = {item['key']: item['home'] for item in LANGUAGES}
-    latest_ue, previous_ue = recommended_versions()
     for item in LANGUAGES:
         lang = item['key']
         source = ROOT / ('' if lang == 'en' else lang) / 'index.html'
-        values = dict(header=header(lang, home_paths, is_home=True), footer=footer(lang), alternates=alternates(home_paths), chrome_css=CHROME_CSS, latest_ue=latest_ue, previous_ue=previous_ue)
-        page = re.sub(r'\{\{(\w+)\}\}', lambda m: values[m[1]], source.read_text())
+        values = dict(header=header(lang, home_paths, is_home=True), footer=footer(lang), alternates=alternates(home_paths), chrome_css=CHROME_CSS)
+        template = source.read_text()
+        template = re.sub(r'<p class="start-note">.*?</p>', ('<p class="start-note">支持的版本见<a href="/docs/zh/requirements.html">环境配置</a>。</p>' if lang == 'zh' else '<p class="start-note">See <a href="/docs/en/requirements.html">environment setup</a> for supported versions.</p>'), template, count=1)
+        page = re.sub(r'\{\{(\w+)\}\}', lambda m: values[m[1]], template)
         target = ROOT / 'site' / item['home'].lstrip('/') / 'index.html'
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(secure_external_links(page))

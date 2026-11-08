@@ -55,17 +55,20 @@ def render_support(snapshot, language):
     versions = supported_versions(snapshot.get('support', {}))
     if not versions:
         raise ValueError('No supported Unreal Engine versions found in the synchronized product lock')
-    levels = [snapshot['support'][version.rsplit('.', 1)[0]].get('verificationLevel') for version in versions]
-    if levels[-1] != 'full' or any(level != 'core' for level in levels[:-1]):
-        raise ValueError('Verification levels changed; revise the support wording before rendering')
-    if language == 'en':
-        labels = ', '.join(versions[:-1]) + (', and ' if len(versions) > 2 else ' and ' if len(versions) > 1 else '') + versions[-1]
-        lines = [f'Current adaptations: stock Unreal Engine {labels}.',
-                 'The most recent supported version has the broadest validation coverage. Unlisted patches are not guaranteed to work.']
-    else:
-        lines = [f"当前适配：原版 UE {'、'.join(versions)}。",
-                 '最新已适配版本的验证范围最完整。未列出的补丁版本不保证可用。']
-    return '\n'.join(f'- {line}' for line in lines)
+    latest_by_minor = {v.rsplit('.', 1)[0]: v for v in versions}
+    selected = list(latest_by_minor.values())[-2:]
+    if len(selected) != 2:
+        raise ValueError('Two supported UE minor versions are required')
+    labels = '、'.join(selected) if language == 'zh' else ' and '.join(selected)
+    import re
+    changelog = (ROOT / 'docs/en/changelog.md').read_text(encoding='utf-8')
+    release = re.search(r'^## (\d+\.\d+\.\d+)', changelog, re.M)
+    if not release:
+        raise ValueError('Current release heading missing from changelog')
+    if language == 'zh':
+        return f'soloAS {release.group(1)} 的所有插件支持原版 UE {labels}。'
+    return f'All soloAS {release.group(1)} plugins support stock Unreal Engine {labels}.'
+
 
 
 def render(snapshot, check=False):

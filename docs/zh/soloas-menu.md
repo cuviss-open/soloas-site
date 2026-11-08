@@ -1,6 +1,10 @@
 # SoloAS 菜单
 
-在关卡编辑器主菜单的 **Tools** 旁边打开 **SoloAS**。
+编辑器的 **SoloAS** 菜单提供常用开发工具：
+
+- **项目打包**：配置打包方案、执行打包和检查结果，详见[项目打包](packaging.md)。
+- **AI 辅助开发**：复制 MCP 配置，连接支持 MCP 的 AI 工具，详见 [AI 辅助开发](ai-assisted.md)。
+- **C++ Toolchain**（仅 Windows）：查看和选择工具链、安装或卸载托管工具链。
 
 ## Resave assets with empty engine version（重新保存引擎版本为空的资产）
 

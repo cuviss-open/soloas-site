@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render release asset and license tables from the frozen release and site data."""
+"""Render release heading and license tables from the frozen release and site data."""
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import json
@@ -8,9 +8,16 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
-def replace_block(text, name, body):
+def replace_block(text, name, body, occurrence=0):
     start, end = f'<!-- generated-{name}:start -->', f'<!-- generated-{name}:end -->'
-    before, marker, tail = text.partition(start)
+    before = ''
+    for _ in range(occurrence):
+        part, marker, text = text.partition(end)
+        if not marker:
+            raise ValueError(f'Missing {name} markers')
+        before += part + marker
+    prefix, marker, tail = text.partition(start)
+    before += prefix
     _, marker2, after = tail.partition(end)
     if not marker or not marker2:
         raise ValueError(f'Missing {name} markers')
@@ -34,31 +41,21 @@ def release_data():
             raise ValueError('invalid asset applicability')
     return release
 
-def asset_table(release, lang):
-    if lang == 'zh':
-        lines = [f"### {release['version']} 发布文件", '', '可使用发布页的 `SHA256SUMS` 核验文件。macOS 仅提供源码，验证范围有限。', '', '| 文件 | UE 版本 | 平台 | 大小 |', '| --- | --- | --- | ---: |']
-    else:
-        lines = [f"### {release['version']} release files", '', 'Verify files with `SHA256SUMS` from the release page. macOS uses the source package and has limited validation.', '', '| File | UE versions | Platform | Size |', '| --- | --- | --- | ---: |']
-    for asset in release['assets']:
-        lines.append(f"| `{asset['name']}` | {', '.join(asset['ueVersions'])} | {', '.join(asset['platforms'])} | {asset_size(asset['bytes'], lang)} |")
-    return '\n'.join(lines)
-
-def asset_size(size, lang):
-    unit = 'GB' if size >= 1024 ** 3 else 'MB'
-    value = size / (1024 ** (3 if unit == 'GB' else 2))
-    return f"{'约' if lang == 'zh' else 'About'} {value:.1f} {unit}"
-
 def run(check=False):
     release = release_data()
+    releases = json.loads((ROOT / 'tools/data/releases.json').read_text())['releases']
+    next_release = next(r for r in releases if r['version'] == '0.2.0')
     tables = json.loads((ROOT / 'tools/site_config.json').read_text())['licenseTables']
     def language(lang):
         results=[]
         versions = [v.strip() for v in release['engineVersion'].split(',')]
         heading = f"## {release['version']} · UE {versions[0]}–{versions[-1]}"
-        for page, name, body in [('requirements', 'release-assets', asset_table(release, lang)), ('license', 'license', '\n'.join(tables[lang])), ('changelog', 'release-heading', heading)]:
+        next_versions = [v.strip() for v in next_release['engineVersion'].split(',')]
+        next_heading = f"## {next_release['version']} · UE {next_versions[0]}–{next_versions[-1]}"
+        for page, name, body, occurrence in [('license', 'license', '\n'.join(tables[lang]), 0), ('changelog', 'release-heading', next_heading, 0), ('changelog', 'release-heading', heading, 1)]:
             path=ROOT / 'docs' / lang / f'{page}.md'
             current=path.read_text(encoding='utf-8')
-            expected=replace_block(current,name,body)
+            expected=replace_block(current,name,body,occurrence)
             if current != expected:
                 if check: results.append(f'{path.relative_to(ROOT)}: generated {name} differs')
                 else: path.write_text(expected,encoding='utf-8')
@@ -72,4 +69,4 @@ if __name__ == '__main__':
     parser.add_argument('--check',action='store_true')
     args=parser.parse_args()
     run(args.check)
-    print('Release asset and license tables match.' if args.check else 'Rendered release asset and license tables.')
+    print('Release heading and license tables match.' if args.check else 'Rendered release heading and license tables.')
