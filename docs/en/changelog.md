@@ -1,6 +1,30 @@
 # Changelog
 
 <!-- generated-release-heading:start -->
+## 0.2.0 · UE 5.7.4–5.8.4
+<!-- generated-release-heading:end -->
+
+- Supports UE 5.7.4 and 5.8.4.
+
+### Added
+
+- Scripts can implement C++, AS and Blueprint interfaces; editor scripts can also declare interfaces for Blueprints to call and implement; packaging and precompilation of newly declared script interfaces are not yet supported.
+- Script classes can inherit Blueprint parents and call functions or read and write properties on existing Blueprint objects; while a script class inherits a Blueprint, structural edits to that Blueprint are protected.
+- Scripts can use Blueprint structs registered in project configuration.
+- Scripts overriding native events can call the original parent implementation.
+- Delegates and container algorithms support lambdas with explicit variable captures.
+- Configure script delivery and output in Project Settings → Plugins → soloAS Packaging, and use the SoloAS menu to open those settings, UE packaging settings and the Project Launcher.
+- Bytecode packaging can omit AS source and reduce startup compilation; semi-AOT can compile eligible script functions into the game to reduce virtual machine overhead.
+- The command line and CI can use project settings and packaging profiles to check, run and inspect packaging; soloAS command-line packaging supports Win64.
+- MCP lets AI query script types and project information and assist with debugging and packaging; the project connection configuration can be copied from the SoloAS menu.
+- C++ toolchain tools can detect and select an available toolchain to help prepare C++ builds.
+- The SoloAS menu supports Chinese and English.
+
+### Upgrade note
+
+- 0.2.0 supports UE 5.7.4 and 5.8.4. Users of UE 5.4.4, 5.5.4 or 5.6.1 should continue using 0.1.x, which will continue to receive fixes.
+
+<!-- generated-release-heading:start -->
 ## 0.1.3 · UE 5.4.4–5.8.4
 <!-- generated-release-heading:end -->
 

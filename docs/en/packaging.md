@@ -1,82 +1,51 @@
 # Packaging
 
-Commands use Windows PowerShell. `$UE`, `$Project`, `$Target` and `$Release` stand for the engine root, the full path of the `.uproject`, the Game target name and the release directory.
+## Packaging entry points
 
-## Common steps
+1. Set maps, cooking, Pak/IoStore, targets and other options in **SoloAS → UE Packaging Settings**, which opens Unreal Engine's **Project Settings → Project → Packaging** page.
+2. **SoloAS → Package Project…** opens UE's Project Launcher for native UE packaging. Scripts are included as source.
+3. For bytecode or semi-AOT, choose the delivery form and output directory in **SoloAS → soloAS Packaging Settings**, then package with the command line or AI assistance described below.
 
-1. Build the Shipping Game:
+## Bytecode packaging
 
-   ```powershell
-   & "$UE/Engine/Build/BatchFiles/Build.bat" $Target Win64 Shipping "-Project=$Project" -WaitMutex -NoHotReload -NoUBA
-   ```
+Do not ship the main AS source, and cut startup preprocessing and compiling. Functions still run as bytecode in the VM, so this is not a native speedup, and the program data in the cache can be analyzed, so it is not encryption or reverse-engineering protection.
 
-2. Use Platforms → Windows → Package Project with Shipping, or run BuildCookRun:
+Choose **Bytecode** in soloAS Packaging Settings, or set `deliveryMode` to `bytecode` in a CLI profile. Run the soloAS packaging CLI. The tool generates matching precompiled caches, collects them into `Script/` in the release copy and checks the package. The base caches are `Binds.Cache`, `Binds.Cache.Headers` and `PrecompiledScript.Cache`; the package should not contain project `.as` source.
 
-   ```powershell
-   & "$UE/Engine/Build/BatchFiles/RunUAT.bat" -nocompileuat -WaitForUATMutex BuildCookRun "-project=$Project" -NoP4 -platform=Win64 -clientconfig=Shipping -cook -stage -pak -package -archive "-archivedirectory=$Release" -nobuild -unattended -utf8output
-   ```
+- **Cache and exe do not match**: a package without source reports `ASR-PRECOMPILED-NO-SOURCE: No compatible precompiled script cache and no script source files are available.`, and the maintainer must publish a matching cache. `Loaded angelscript precompiled data was for a different build configuration. Discarding all precompiled data.` means the cache was generated with another configuration.
 
-3. Check the package: `<the .pak in the release>` stands for the Pak file in the release, such as `MyGame-Windows.pak`. Run `UnrealPak.exe <the .pak in the release> -List` to list the package contents; then start the game from the release directory, enter a level that uses scripts and call a representative function. A clean exit alone does not prove the scripts loaded.
+## Semi-AOT packaging (static JIT)
 
-## Package with source
+Turn the AS functions that can be generated into C++ compiled into the Game, reducing the VM overhead of those functions; the AS runtime, reflection and bytecode entry points remain. The cost is longer C++ build time and a larger executable, and not every function gets faster.
 
-Use this to get the game delivered first, or when players may view and modify scripts: the runtime reads `.as` files and compiles them, so startup includes script compile time. Source can be extracted from the Pak.
+Choose **Semi-AOT** in soloAS Packaging Settings, or set `deliveryMode` to `semi_aot` in a CLI profile. Run the soloAS packaging CLI. The same run that generates the precompiled data outputs the JIT C++ files, and the `sync-jit` command puts them into the C++ consumer module; when the consumer module does not exist it is generated and registered with the Game target automatically, and every later generation syncs and rebuilds the Game automatically. The order is fixed: generate, rebuild the Game, package; cooking again alone does not link the C++ into the exe. The `check-package` command should decide "semi-AOT package": the JIT consumer module is linked into the exe and the package has the matching cache.
 
-Follow steps 1, 2 and 3 of the common steps.
+- **How it gets into the package**: the JIT C++ enters the exe through the normal build, not by being placed in the Pak; the cache is packaged by the rules of bytecode packaging.
+- **Cache and the exe's JIT do not match**: you see `Loaded angelscript precompiled data does not match the transpiled C++ in the game binary. Transpiled code will not be used!` and the bytecode in the cache is used instead, which mainly affects performance. When a module cache set does not match, the whole set may be invalidated.
 
-Without a precompiled cache, the project `Script/` folder is packed into the Pak.
+## Packaging from scripts and CI
 
-## Package with bytecode
+The `soloas_package.py` that ships with the plugin reads the same project settings as the native settings page. Use it to read or change configuration, manage profiles, run checks, package and query results from scripts or CI. The soloAS CLI pipeline currently supports Win64. `<Tool>` is `Build/PackagingTool/soloas_package.py` in the installed plugin:
 
-Do not ship the main AS source, and cut startup preprocessing and compiling. Functions still run as bytecode in the VM, and the program data in the cache can be analyzed, so it is not encryption or reverse-engineering protection.
+```text
+python <Tool> --project <Game.uproject> profiles list --json
+python <Tool> --project <Game.uproject> config read --platform Win64 --json
+python <Tool> --project <Game.uproject> precheck --json
+python <Tool> --project <Game.uproject> run --json
+python <Tool> --project <Game.uproject> status --job <id> --json
+```
 
-1. Delete the old cache files from your project's `Script/` folder: `Binds.Cache`, `Binds.Cache.Headers` and `PrecompiledScript*.Cache` (all `.Cache` files beginning with PrecompiledScript, such as `PrecompiledScript_Development.Cache` and `PrecompiledScript_Shipping.Cache`).
-2. Build the Shipping Game as in step 1 of the common steps.
-3. Generate matching precompiled data with the Shipping exe; data generated by the editor cannot be used. The process exits by itself once it has written its output:
+Without `--profile`, the CLI uses project defaults. To repeat a named combination, create the profile first:
 
-   Replace the angle-bracketed command argument with the actual file path, such as `MyGame.exe` in the build output folder.
+```text
+python <Tool> --project <Game.uproject> profiles save --name Shipping-bytecode --overrides '{"configuration":"Shipping","deliveryMode":"bytecode"}' --json
+python <Tool> --project <Game.uproject> run --profile Shipping-bytecode --json
+```
 
-   ```powershell
-   & "<Shipping.exe from the build output>" -as-generate-precompiled-data -as-write-bind-db -unattended -nocrashreports -NullRHI -NoMessaging -NoASDebugServer -NoSound -NoSplash
-   ```
+`precheck` reports configuration, optional toolchain probing and pending checks; `run` performs the full checks before building. The script returns structured progress and results that CI can read. A configuration write returns the diff of what changed; every run records its profile and input version so it can be reviewed and rebuilt.
 
-4. Copy the three files it actually wrote back into your project's `Script/` byte for byte, without mixing in files from another run; stop if you cannot find all three:
+## Let AI prepare and run packaging
 
-   ```text
-   Binds.Cache
-   Binds.Cache.Headers
-   PrecompiledScript.Cache
-   ```
+After connecting in **SoloAS → AI-assisted development**, tell the AI your delivery goal, for example "create a Windows Shipping bytecode profile, check the configuration and package". The AI reads the current project settings, gives the changes needed and their diff, saves the profile and starts packaging; you can keep asking about progress, find the failing stage and see the final result. AI assistance and the command line use the same packaging flow and read the project defaults written by the native settings page.
 
-   Angle brackets in the path mark the project folder or name to substitute, for example `MyProject/Saved/Cooked/Windows/MyProject/Script/`.
-5. Build, package and check again as in steps 1, 2 and 3 of the common steps; when checking, confirm that the package has the three cache files and no project `.as` files.
-
-- **Files a package without source needs**: the three cache files above; when all three exist and are non-empty, a Shipping build by default packs only these three files into the Pak and no longer includes the project `.as`.
-- **Old caches are rejected**: when the cache and exe do not match, a package without source reports `ASR-PRECOMPILED-NO-SOURCE: No compatible precompiled script cache and no script source files are available.`, and you must regenerate and republish a matching cache. `Loaded angelscript precompiled data was for a different build configuration. Discarding all precompiled data.` means the cache was generated with another configuration.
-
-## Half-AOT packaging
-
-Convert the AS functions that can be generated into C++ and compile them into the game, which reduces virtual machine overhead; the bytecode entry points are still kept at runtime. The cost is longer C++ compile times and a larger exe. See [the Hazelight documentation](https://angelscript.hazelight.se/cpp-bindings/precompiled-data/).
-
-1. Delete the old cache files from your project's `Script/` folder: `Binds.Cache`, `Binds.Cache.Headers` and `PrecompiledScript*.Cache` (all `.Cache` files beginning with PrecompiledScript, such as `PrecompiledScript_Development.Cache` and `PrecompiledScript_Shipping.Cache`), and the old `AS_JITTED_CODE` in the project module.
-2. Build the Shipping Game and package once, as in steps 1 and 2 of the common steps.
-3. Generate matching precompiled data by running the Shipping exe in the package folder; data generated by the editor cannot be used. The process exits by itself when it has finished writing:
-
-   ```powershell
-   & "<Shipping.exe from the build output>" -as-generate-precompiled-data -as-write-bind-db -unattended -nocrashreports -NullRHI -NoMessaging -NoASDebugServer -NoSound -NoSplash
-   ```
-
-   Keep the whole `AS_JITTED_CODE/` folder written in the package root, and the three files `Binds.Cache`, `Binds.Cache.Headers` and `PrecompiledScript.Cache`.
-4. Copy `AS_JITTED_CODE/` unchanged into the game's C++ module, for example `Source/MyGame/AS_JITTED_CODE/`. Do not change the file extensions, and do not include the generated cpp files by hand.
-5. In that module's `Build.cs`, add `AngelscriptCode` and the native module dependencies the scripts use. This example is for a project that uses both GAS and Enhanced Input:
-
-   ```csharp
-   PrivateDependencyModuleNames.AddRange(new[] { "AngelscriptCode", "EnhancedInput", "GameplayAbilities", "GameplayTasks", "AngelscriptGAS", "AngelscriptEnhancedInput" });
-   ```
-6. Regenerate the project files after changing `Build.cs`.
-7. Put the three cache files saved in step 3 back into your project's `Script/` folder; this must happen before packaging. Then build, package and check again as in steps 1, 2 and 3 of the common steps; when checking, confirm that the package has the three cache files and no project `.as` files, and that representative gameplay works at runtime.
-
-- **The cache and the exe must match**: rebuilding only to add this generated C++ does not require generating the cache again; after you change scripts, the engine, plugins or other C++, start again from step 2.
-- **Put the cache back before packaging**: putting it back after packaging does not update the Pak that was already generated.
-
-The packaging workflow can be further streamlined; this is planned alongside future features.
+After connecting MCP, use `soloas_package_config`, `soloas_package_config_write`, `soloas_package_profiles_save`, `soloas_package_precheck`, `soloas_package_run`, `soloas_package_status` and `soloas_package_cancel` for the same workflow.
