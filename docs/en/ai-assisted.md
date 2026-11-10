@@ -2,10 +2,11 @@
 
 ## Humans: view and write in VS Code
 
-- Install VS Code and the [Unreal Angelscript extension](https://marketplace.visualstudio.com/items?itemName=Hazelight.unreal-angelscript) published by UE-AS.
-- Open the project's `Script` folder in VS Code, or use the editor menu **Tools → Programming → Open Angelscript workspace (VS Code)**.
-- The extension provides completion, signature help, F12 navigation, diagnostics and debugging, and compile errors after a save return to the Problems panel; the **Angelscript API** sidebar lets you search, list and view API details.
-- The extension gets types and compile information from the editor's AS DebugServer, on port `27099` by default, and connects by itself. If you changed the port, make `UnrealAngelscript.unrealConnectionPort` match the Connection Port in the project's Angelscript settings.
+- Install: search for “soloAS” in the VS Code Extensions view, or install it from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=cuviss.soloas) or [Open VSX](https://open-vsx.org/extension/cuviss/soloas).
+- Open the project: open its `Script` folder in VS Code, or use the editor menu **Tools → Programming → Open Angelscript workspace (VS Code)**.
+- The extension provides completion, signature help, F12 navigation, diagnostics and debugging, and compile errors after a save return to the Problems panel; the **Angelscript API** sidebar lets you search, list and view API details. The soloAS extension fully covers the original Hazelight extension’s features. If the original extension is also installed, soloAS will prompt you once to disable it; having both enabled causes duplicate diagnostics.
+- Debugging: while the editor is running, VS Code connects to the debug service so you can set breakpoints, step through code and inspect variables. Breakpoints also work inside lambda callbacks.
+- The extension gets types and compile information from the editor's AS DebugServer, on port `27099` by default, and connects by itself. If you changed the port, make `SoloAS.unrealConnectionPort` match the Connection Port in the project's Angelscript settings.
 - When the editor is not running, or was started with `-NoMessaging` or `-NoASDebugServer`, the live features are unavailable.
 
 ## AI: assist development through MCP
@@ -40,6 +41,8 @@ claude mcp add --transport stdio --scope project soloas-angelscript -- "<SoloASD
 
 - **Online and offline**: the available APIs are those in the running editor's type table, covering registered native bindings and compiled script types. The Host saves the last type table as a snapshot and reads it when the editor is not open; the first time offline with no snapshot, API queries return `DebugServer runtime type table is not available yet`.
 - **Using it with UE's official MCP**: the soloAS Host covers AS APIs, script types, diagnostics and debugging; UE's `ModelContextProtocol` covers assets, scenes and other operations in the editor. Their ports and protocols have nothing to do with `27099`, and neither depends on the other.
+
+For a batch of script edits, call `as_edit_begin`, save the files, then call `as_edit_end` and read that compile result. Manual saves are also deferred while paused. Leases default to 120 seconds and are capped at 600 seconds. A timeout or disconnected client restores automatic compilation and compiles the changes; you can also resume immediately from **SoloAS → AI-assisted development** in the editor. Use `as_compile` to request a compile directly.
 
 ## What MCP provides
 

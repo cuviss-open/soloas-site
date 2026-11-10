@@ -50,11 +50,11 @@ import blueprint BP_Enemy;
 class UEnemy : BP_Enemy
 {
     UFUNCTION(BlueprintOverride)
-    void OnBlueprintDeath() {}        // 覆盖蓝图已有的事件。
+    void OnBlueprintDeath() {}        // 覆盖 C++ 中声明的蓝图事件。
 }
 ```
 
-也可以用 `CallBlueprint`、`SetBlueprintProperty`、`GetBlueprintProperty` 调用已有蓝图对象的函数和变量。蓝图继承脚本类时，编辑器会在脚本父类重载后更新蓝图子类。
+脚本可以调用蓝图函数；覆写仅支持 C++ 声明为 `BlueprintImplementableEvent` 或 `BlueprintNativeEvent` 的事件，不能覆写纯蓝图函数。也可以用 `CallBlueprint`、`SetBlueprintProperty`、`GetBlueprintProperty` 调用已有蓝图对象的函数和变量。蓝图继承脚本类时，编辑器会在脚本父类重载后更新蓝图子类。
 
 ## 蓝图结构体
 

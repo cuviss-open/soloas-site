@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.2.1 · UE 5.7.4–5.8.4
+
+- Supports UE 5.7.4 and 5.8.4.
+
+### Fixes
+
+- Fixed breakpoints inside lambda callbacks failing to stop in the corresponding callback frame.
+- Fixed a possible editor crash when hot reloading a Blueprint parent. As documented, a Blueprint parent can be used without an explicit `import`.
+- Fixed implementation classes not receiving updated default methods after changing a parent interface's default method and hot reloading within the same module.
+- Fixed builds failing on name collisions when compiling the plugins from source on Windows with default Unity builds.
+
+### Improvements
+
+- MCP supports batch editing and explicit compile requests. If an AI assistant is interrupted, compilation can resume; it can also be resumed from **SoloAS → AI-assisted development** in the editor.
+
+### VS Code extension
+
+- The **soloAS** extension on the Visual Studio Code Marketplace is releasing alongside soloAS 0.2.1.
+- Adds interface and lambda syntax support.
+- With soloAS 0.2.1, VS Code can complete Blueprint parent members and interface methods and show their hover information.
+- Diagnostics refresh after type information loads or a document is reopened; breakpoints in lambda callbacks stop in the correct call frame.
+
 <!-- generated-release-heading:start -->
 ## 0.2.0 · UE 5.7.4–5.8.4
 <!-- generated-release-heading:end -->

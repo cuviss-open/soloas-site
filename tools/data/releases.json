@@ -249,6 +249,70 @@
           ]
         }
       ]
+    },
+    {
+      "version": "0.2.1",
+      "engineVersion": "5.7.4, 5.8.4",
+      "status": "planned",
+      "assets": [
+        {
+          "name": "soloAS-0.2.1-source.zip",
+          "bytes": 3975574,
+          "sha256": "5d0298b12157c490a1811bd11cbd971c2fc672858f2de302bb044f5f89e923f2",
+          "ueVersions": [
+            "5.7.4",
+            "5.8.4"
+          ],
+          "platforms": [
+            "Win64",
+            "macOS"
+          ]
+        },
+        {
+          "name": "soloAS-0.2.1-ue5.7.4-win64.7z",
+          "bytes": 287769273,
+          "sha256": "d39fe53c8c5489bc16a923f99d96f2aa5a436f2d78895baa65a40b7462e6a79d",
+          "ueVersions": [
+            "5.7.4"
+          ],
+          "platforms": [
+            "Win64"
+          ]
+        },
+        {
+          "name": "soloAS-0.2.1-ue5.7.4-win64-symbols.7z",
+          "bytes": 687198685,
+          "sha256": "42f768cc46878dbabbef48c63d174dddddcd48661af17a99bfd44bf371a2ab3f",
+          "ueVersions": [
+            "5.7.4"
+          ],
+          "platforms": [
+            "Win64"
+          ]
+        },
+        {
+          "name": "soloAS-0.2.1-ue5.8.4-win64.7z",
+          "bytes": 293556475,
+          "sha256": "188fea8d5b221a9e39018e870580fcfb7f925714de499e9806bf7e71b1e579ea",
+          "ueVersions": [
+            "5.8.4"
+          ],
+          "platforms": [
+            "Win64"
+          ]
+        },
+        {
+          "name": "soloAS-0.2.1-ue5.8.4-win64-symbols.7z",
+          "bytes": 730506506,
+          "sha256": "dda976b8a6f02314e0715256530ab858b3297b700b7d0ca6a7288afcad8022ff",
+          "ueVersions": [
+            "5.8.4"
+          ],
+          "platforms": [
+            "Win64"
+          ]
+        }
+      ]
     }
   ]
 }

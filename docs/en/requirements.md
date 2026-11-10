@@ -5,7 +5,7 @@
 ### Engine version
 
 <!-- generated-engine-support:start -->
-All soloAS 0.2.0 plugins support stock Unreal Engine 5.7.4 and 5.8.4.
+All soloAS 0.2.1 plugins support stock Unreal Engine 5.7.4 and 5.8.4.
 <!-- generated-engine-support:end -->
 
 If you use UE 5.4–5.6, please use [0.1.x](changelog.md).
@@ -25,8 +25,9 @@ See [Adaptation Differences Across Unreal Engine Versions](ue-version-difference
 
 ### Code editor
 
-- VS Code, with Hazelight's Unreal Angelscript extension installed; see the [Hazelight documentation site](https://angelscript.hazelight.se).
-- Set the workspace to the project's `Script` folder; completion, diagnostics, navigation, breakpoints, variables and continue are all available.
+- We recommend installing the **soloAS** extension for VS Code from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=cuviss.soloas) or [Open VSX](https://open-vsx.org/extension/cuviss/soloas). Use the latest soloAS extension together with the latest soloAS plugins for full support for completion of Blueprint parent classes and interfaces, and for breakpoints inside lambda callbacks (see the [changelog](changelog.md)).
+- You can also use Hazelight’s original Unreal Angelscript extension; see the [Hazelight documentation site](https://angelscript.hazelight.se).
+- Set the workspace to the project’s `Script` folder; completion, diagnostics, navigation, breakpoints, variables and continue are all available.
 - Start the editor normally, without `-NoMessaging` or `-NoASDebugServer`, which turn off the DebugServer the extension uses.
 
 ## Quick start

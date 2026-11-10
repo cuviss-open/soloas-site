@@ -5,7 +5,7 @@
 ### 引擎版本
 
 <!-- generated-engine-support:start -->
-soloAS 0.2.0 的所有插件支持原版 UE 5.7.4、5.8.4。
+soloAS 0.2.1 的所有插件支持原版 UE 5.7.4、5.8.4。
 <!-- generated-engine-support:end -->
 
 仍在使用 UE 5.4–5.6 的用户请使用 [0.1.x](changelog.md)。
@@ -25,7 +25,8 @@ soloAS 0.2.0 的所有插件支持原版 UE 5.7.4、5.8.4。
 
 ### 代码编辑器
 
-- VS Code，安装 Hazelight 的 Unreal Angelscript 扩展，详见 [Hazelight 文档站](https://angelscript.hazelight.se)。
+- 推荐在 VS Code 安装 **soloAS** 扩展：[VS Code 市场](https://marketplace.visualstudio.com/items?itemName=cuviss.soloas) 或 [Open VSX](https://open-vsx.org/extension/cuviss/soloas)。扩展和 soloAS 插件都使用最新版本，才能完整使用蓝图父类和接口补全、lambda 回调断点（版本信息见[更新日志](changelog.md)）。
+- 也可以使用 Hazelight 原版 Unreal Angelscript 扩展，详见 [Hazelight 文档站](https://angelscript.hazelight.se)。
 - 工作区设为工程的 `Script` 文件夹；补全、诊断、跳转、断点、变量和继续执行都可用。
 - 正常启动编辑器，不要加 `-NoMessaging` 或 `-NoASDebugServer`，它们会关掉扩展用到的 DebugServer。
 
