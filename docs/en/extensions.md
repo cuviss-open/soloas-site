@@ -50,11 +50,11 @@ import blueprint BP_Enemy;
 class UEnemy : BP_Enemy
 {
     UFUNCTION(BlueprintOverride)
-    void OnBlueprintDeath() {}        // Override an event the Blueprint already has.
+    void OnBlueprintDeath() {}        // Override a Blueprint event declared in C++.
 }
 ```
 
-You can also use `CallBlueprint`, `SetBlueprintProperty` and `GetBlueprintProperty` to call functions and access variables on an existing Blueprint object. When a Blueprint inherits a script class, the editor updates the Blueprint subclass after the script parent reloads.
+Scripts can call Blueprint functions. Overrides are limited to events declared in C++ as `BlueprintImplementableEvent` or `BlueprintNativeEvent`; pure Blueprint functions cannot be overridden. You can also use `CallBlueprint`, `SetBlueprintProperty` and `GetBlueprintProperty` to call functions and access variables on an existing Blueprint object. When a Blueprint inherits a script class, the editor updates the Blueprint subclass after the script parent reloads.
 
 ## Blueprint structs
 

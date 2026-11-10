@@ -2,10 +2,11 @@
 
 ## 人用 VS Code 查看和编写
 
-- 安装 VS Code 和 UE-AS 官方发布的 [Unreal Angelscript 扩展](https://marketplace.visualstudio.com/items?itemName=Hazelight.unreal-angelscript)。
-- 在 VS Code 里打开工程的 `Script` 文件夹，或用编辑器菜单 **Tools → Programming → Open Angelscript workspace (VS Code)**。
-- 扩展提供补全、签名提示、F12 跳转、诊断和调试，保存后的编译错误回到 Problems 面板；**Angelscript API** 侧栏可搜索、列出和查看 API 详情。
-- 扩展通过编辑器的 AS DebugServer 取得类型和编译信息，默认端口 `27099`，自动连接。改过端口时，让 `UnrealAngelscript.unrealConnectionPort` 与工程 Angelscript 设置里的 Connection Port 一致。
+- 安装：在 VS Code 扩展面板搜索 “soloAS”，也可以从 [VS Code 市场](https://marketplace.visualstudio.com/items?itemName=cuviss.soloas) 或 [Open VSX](https://open-vsx.org/extension/cuviss/soloas) 安装。
+- 打开工程：在 VS Code 里打开工程的 `Script` 文件夹，或用编辑器菜单 **Tools → Programming → Open Angelscript workspace (VS Code)**。
+- 扩展提供补全、签名提示、F12 跳转、诊断和调试，保存后的编译错误回到 Problems 面板；**Angelscript API** 侧栏可搜索、列出和查看 API 详情。soloAS 扩展完整覆盖 Hazelight 原版扩展的功能。如果也安装了原版扩展，soloAS 会一次性提示你停用它；两个扩展同时启用会出现重复诊断。
+- 调试：编辑器运行时，VS Code 会连接调试服务，可以设置断点、单步执行、查看变量，lambda 回调里的断点也能用。
+- 扩展通过编辑器的 AS DebugServer 取得类型和编译信息，默认端口 `27099`，自动连接。改过端口时，让 `SoloAS.unrealConnectionPort` 与工程 Angelscript 设置里的 Connection Port 一致。
 - 编辑器没运行，或用 `-NoMessaging`、`-NoASDebugServer` 启动时，实时功能不可用。
 
 ## AI 用 MCP 辅助开发
@@ -40,6 +41,8 @@ claude mcp add --transport stdio --scope project soloas-angelscript -- "<SoloASD
 
 - **在线与离线**：可用的 API 以运行中编辑器的类型表为准，包含已注册的原生绑定和已编译的脚本类型。Host 会保存最近一次的类型表作快照，编辑器没开时读这份快照；第一次离线又没有快照时，API 查询返回 `DebugServer runtime type table is not available yet`。
 - **和 UE 官方 MCP 并用**：soloAS 的 Host 负责 AS 的 API、脚本类型、诊断和调试；UE 的 `ModelContextProtocol` 负责编辑器里的资产、场景等操作，端口和协议都与 `27099` 无关，两者互不依赖。
+
+批量修改脚本时，先调用 `as_edit_begin`，再依次保存文件，最后调用 `as_edit_end` 并读取该次编译结果。暂停期间，手动保存的脚本也会延后编译；租约默认 120 秒、最长 600 秒，超时或连接断开后会自动恢复并编译。也可在编辑器的 **SoloAS → AI 辅助开发** 菜单中立即恢复。需要主动编译时可调用 `as_compile`。
 
 ## MCP 能提供什么
 
