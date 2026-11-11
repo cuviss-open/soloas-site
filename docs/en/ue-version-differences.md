@@ -4,10 +4,10 @@
 
 This page is organized by soloAS version.
 
-- [0.2.0 (current, supports UE 5.7, 5.8)](#020-current-version-supports-ue-57-58)
+- [0.2.x (current, supports UE 5.7, 5.8)](#02x-current-version-supports-ue-57-58)
 - [0.1.x (supports UE 5.4–5.8)](#01x-supports-ue-5458)
 
-## 0.2.0 (current version · supports UE 5.7, 5.8)
+## 0.2.x (current version · supports UE 5.7, 5.8)
 
 ### Core plugins
 
