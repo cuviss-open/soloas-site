@@ -1,5 +1,6 @@
 
 /* Shared site chrome, generated from the language table. */
+.ver{color:inherit;font-weight:700;font-style:italic}
 .site-header{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);padding:0;background:rgba(33,26,20,.88);backdrop-filter:blur(14px)}
 html{scroll-padding-top:110px}
 .skip{z-index:30}
@@ -38,3 +39,17 @@ dialog.site-dialog::backdrop{background:rgba(15,12,9,.72)}
 .site-dialog-close-fallback:hover,.site-dialog-close-button:hover{background:#d9b87818;color:var(--gold)}
 .site-dialog-close-fallback:focus-visible,.site-dialog-close-button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 @media(max-width:720px){dialog.site-dialog{padding:12px}.site-dialog-panel{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);padding:24px 20px}.site-dialog-panel h2{font-size:var(--fs-5);margin-bottom:18px}.site-dialog-section{margin-top:18px;padding-top:14px}.site-dialog-section h3{font-size:var(--fs-4)}.site-dialog-section p{font-size:var(--fs-2)}}
+
+/* Document navigation: page outline on wide screens, combined menu on small screens. */
+.layout{display:block;max-width:1000px}
+.contents-button{display:block;position:fixed;bottom:max(16px,env(safe-area-inset-bottom));left:16px;z-index:4;border:1px solid var(--line);border-radius:999px;padding:10px 16px;background:var(--bg);color:var(--gold);font:var(--fs-2) var(--sans);box-shadow:0 3px 18px #0005;cursor:pointer;min-height:44px}
+.layout .page-toc{display:none}
+.menu-wide{display:none}
+.contents-sections .toc-h3,.page-toc .toc-h3{padding-left:24px}
+@media(min-width:1200px){
+.layout{display:grid;grid-template-columns:minmax(0,880px) 220px;max-width:1240px}
+.layout .page-toc{display:block;position:sticky;top:110px;align-self:start;max-height:calc(100vh - 134px);overflow:auto;margin:0;padding:0;border:0}
+.page-toc a{display:block;text-decoration:none;font-size:var(--fs-2);line-height:1.45;padding:4px 10px 4px 13px;color:var(--muted);border-left:1px solid var(--line);overflow-wrap:anywhere}
+.page-toc a:hover,.page-toc a[aria-current]{color:var(--gold);border-left:2px solid var(--gold)}
+.menu-wide{display:inline}.menu-narrow,.contents-page{display:none}
+}

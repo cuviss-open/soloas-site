@@ -1,34 +1,68 @@
 # Changelog
 
+## 0.3.0 · UE 5.7.4–5.8.4
+
+### Version support
+
+- This release supports UE 5.7.4 and 5.8.4.
+- Earlier UE versions are supported by 0.1.x (UE 5.4.4–5.8.4); this release includes fixes for it.
+- For more about soloAS, visit: [soloAS home](https://soloas.cuviss.com/), [Docs](https://soloas.cuviss.com/docs/en/overview.html).
+
+### New features
+
+- Feature Mods: organize gameplay into independently loadable, unloadable and updatable mods, distributed with the project or installed by players.
+- Create mods, edit manifests and check dependencies in the editor; configure which APIs external mods can use and verify official mod signatures.
+
+### Fixes
+
+- Missing Blueprint struct assets no longer cause a crash.
+- Interface default methods inherited across script files now update after hot reload.
+- Unsafe interface changes now produce a clear message and preserve existing code.
+- Fixed name collisions in Unity builds with certain plugin combinations.
+- A native call module failing to load no longer causes the editor to crash. (also in 0.1.x)
+- Installing the prebuilt package into a C++ project no longer recompiles the soloAS plugins on the first build.
+
+### Other notes
+
+- The soloAS VS Code extension 0.3.0 releases alongside.
+
 ## 0.2.1 · UE 5.7.4–5.8.4
 
-- Supports UE 5.7.4 and 5.8.4.
+### Version support
+
+- This release supports UE 5.7.4 and 5.8.4.
+- Earlier UE versions are supported by 0.1.x (UE 5.4.4–5.8.4); this release does not include fixes for it.
+- For more about soloAS, visit: [soloAS home](https://soloas.cuviss.com/), [Docs](https://soloas.cuviss.com/docs/en/overview.html).
+
+### New features
+
+- VS Code can now complete Blueprint parent members and interface methods and show their hover information.
+- MCP editing supports batch changes and explicit compilation. If an AI assistant is interrupted, compilation can resume from MCP or the editor menu.
+- The **soloAS** extension on the Visual Studio Code Marketplace is releasing alongside soloAS 0.2.1.
+- The VS Code extension adds interface and lambda syntax support. Diagnostics refresh after type information loads or a document is reopened, and breakpoints in lambda callbacks stop in the correct call frame.
 
 ### Fixes
 
 - Fixed breakpoints inside lambda callbacks failing to stop in the corresponding callback frame.
-- Fixed a possible editor crash when hot reloading a Blueprint parent. As documented, a Blueprint parent can be used without an explicit `import`.
+- Fixed a possible editor crash when hot reloading a Blueprint parent. Script classes can inherit a Blueprint parent as documented without declaring an explicit `import`.
 - Fixed implementation classes not receiving updated default methods after changing a parent interface's default method and hot reloading within the same module.
 - Fixed builds failing on name collisions when compiling the plugins from source on Windows with default Unity builds.
 
-### Improvements
+### Other notes
 
-- MCP supports batch editing and explicit compile requests. If an AI assistant is interrupted, compilation can resume; it can also be resumed from **SoloAS → AI-assisted development** in the editor.
-
-### VS Code extension
-
-- The **soloAS** extension on the Visual Studio Code Marketplace is releasing alongside soloAS 0.2.1.
-- Adds interface and lambda syntax support.
-- With soloAS 0.2.1, VS Code can complete Blueprint parent members and interface methods and show their hover information.
-- Diagnostics refresh after type information loads or a document is reopened; breakpoints in lambda callbacks stop in the correct call frame.
+- Known issue: When the parent interface and implementation class are in different modules, hot reload does not refresh the implementation class. Restart the editor or recompile the module containing the implementation class.
 
 <!-- generated-release-heading:start -->
 ## 0.2.0 · UE 5.7.4–5.8.4
 <!-- generated-release-heading:end -->
 
-- Supports UE 5.7.4 and 5.8.4.
+### Version support
 
-### Added
+- This release supports UE 5.7.4 and 5.8.4.
+- Earlier UE versions are supported by 0.1.x (UE 5.4.4–5.8.4); this release does not include fixes for it.
+- For more about soloAS, visit: [soloAS home](https://soloas.cuviss.com/), [Docs](https://soloas.cuviss.com/docs/en/overview.html).
+
+### New features
 
 - Scripts can implement C++, AS and Blueprint interfaces; editor scripts can also declare interfaces for Blueprints to call and implement; packaging and precompilation of newly declared script interfaces are not yet supported.
 - Script classes can inherit Blueprint parents and call functions or read and write properties on existing Blueprint objects; while a script class inherits a Blueprint, structural edits to that Blueprint are protected.
@@ -42,21 +76,23 @@
 - C++ toolchain tools can detect and select an available toolchain to help prepare C++ builds.
 - The SoloAS menu supports Chinese and English.
 
-### Upgrade note
-
-- 0.2.0 supports UE 5.7.4 and 5.8.4. Users of UE 5.4.4, 5.5.4 or 5.6.1 should continue using 0.1.x, which will continue to receive fixes.
-
 <!-- generated-release-heading:start -->
 ## 0.1.3 · UE 5.4.4–5.8.4
 <!-- generated-release-heading:end -->
 
-- Supports UE 5.4.4–5.8.4 so projects using these versions can use soloAS.
+### Version support
+
+- This release supports UE 5.4.4–5.8.4.
+- For more about soloAS, visit: [soloAS home](https://soloas.cuviss.com/), [Docs](https://soloas.cuviss.com/docs/en/overview.html).
+
+### New features
+
+- The soloAS menu adds About soloAS, Check for updates, and one-click updating for easier version checks and updates; updates preserve user settings inside plugins and roll back automatically on failure.
 - Expanded script access to native UE plugin APIs, including TextureGraph and ChaosCloth, and aligned reference arguments and return values (matches UE-AS fork).
-- StateTree can now be enabled as needed by the project instead of being required.
-- The soloAS menu adds About soloAS, Check for updates, and one-click updating for easier version checks and updates.
 
 ### Fixes
 
+- AS scripting API improvements: based on the UE 5.8.4-era AS plugin from the UE-AS fork, details of a few rarely used interfaces have been aligned; upstream defects such as non-empty FName defaults are corrected.
 - Fixed native function calls not passing reference and output arguments at the caller’s address and losing input values for non-const bare references, which could cause crashes.
 - Fixed a possible editor crash on exit after exporting script documentation.
 - Fixed Blueprint subclass overrides of native properties being replaced by script defaults when the script base class sets the same property in a default statement.
@@ -77,6 +113,7 @@
 - Fixed StateTree script nodes potentially disappearing from the node list after compiling Blueprints or loading assets.
 
 ### Changes
+
 - Plugin script roots are collected only from enabled plugins declaring `CanContainContent`; `Script` directories in plugins without that declaration are no longer loaded, matching the UE-AS fork.
 - `System::SetTimer` now requires an explicit `bLooping` argument; add `true` or `false` to existing scripts, matching the UE-AS fork.
 - Collision object query masks now use `int32` and the `ObjectTypesToQuery` field; scripts using the old `int64` constructor or Get/Set methods need adjustment, matching the UE-AS fork.
@@ -84,6 +121,7 @@
 - `InputModifier.ModifyRaw` is no longer declared const; scripts using the interface need adjustment, matching the UE-AS fork.
 
 ### Removed features
+
 - Removed Blueprint quick call scanning, Full reload scripts, and Open log from the menu (extension feature, not kept for now).
 - Assets with an empty engine version no longer trigger an automatic startup notice (redundant, not kept for now).
 - Removed script unit isolation, automatic namespaces, and unit dependency rules (extension feature, not kept for now).
@@ -95,16 +133,22 @@
 
 ## 0.1.2 · UE 5.8.4
 
-2026-10-25
+### Version support
 
-- Supports UE 5.8.4.
+- This release supports UE 5.8.4.
+- For more about soloAS, visit: [soloAS home](https://soloas.cuviss.com/), [Docs](https://soloas.cuviss.com/docs/en/overview.html).
+
+### New features
+
 - Includes the latest UE-AS fork updates, including new math functions such as 64-bit integer rounding.
+
+### Fixes
+
 - Fixed editor settings for hiding functions.
 
 ## 0.1.1 · UE 5.8.3
 
-2026-10-24
+### Version support
 
-- First precompiled release: includes a Win64 package ready to use in Blueprint projects.
-- Also includes source and debugging symbols packages, with SHA256SUMS verification.
-- Packaging Win64 projects requires MSVC 14.44 and Windows SDK 10.0.22621.0.
+- This release supports UE 5.8.3.
+- For more about soloAS, visit: [soloAS home](https://soloas.cuviss.com/), [Docs](https://soloas.cuviss.com/docs/en/overview.html).

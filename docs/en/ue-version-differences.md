@@ -4,10 +4,11 @@
 
 This page is organized by soloAS version.
 
-- [0.2.x (current, supports UE 5.7, 5.8)](#02x-current-version-supports-ue-57-58)
+- [0.3.x (current, supports UE 5.7, 5.8)](#03x-current-version-supports-ue-57-58)
+- [0.2.x (historical version · supports UE 5.7, 5.8)](#02x-historical-version-supports-ue-57-58)
 - [0.1.x (supports UE 5.4–5.8)](#01x-supports-ue-5458)
 
-## 0.2.x (current version · supports UE 5.7, 5.8)
+## 0.3.x (current version · supports UE 5.7, 5.8)
 
 ### Core plugins
 
@@ -20,6 +21,22 @@ This page is organized by soloAS version.
 Behavior is consistent across supported versions; no known differences at this time.
 
 ### Enhanced Input
+
+Behavior is consistent across supported versions; no known differences at this time.
+
+## 0.2.x (historical version · supports UE 5.7, 5.8)
+
+### Core plugins (0.2.x)
+
+| Difference | Affected versions | Scope | Description | User impact |
+| --- | --- | --- | --- | --- |
+| Externalized container override state | 5.7 | Editor only | UE 5.7 lacks externalized override state. The engine warns, ignores Externalized operations and imports the value as an ordinary override. **The UE-AS fork behaves the same in these versions.** | Use a newer editor supporting externalization when the externalized semantics must be preserved. |
+
+### GAS (0.2.x)
+
+Behavior is consistent across supported versions; no known differences at this time.
+
+### Enhanced Input (0.2.x)
 
 Behavior is consistent across supported versions; no known differences at this time.
 
