@@ -5,7 +5,7 @@
 ### 引擎版本
 
 <!-- generated-engine-support:start -->
-soloAS 0.2.1 的所有插件支持原版 UE 5.7.4、5.8.4。
+soloAS 0.3.0 的所有插件支持原版 UE 5.7.4、5.8.4。
 <!-- generated-engine-support:end -->
 
 仍在使用 UE 5.4–5.6 的用户请使用 [0.1.x](changelog.md)。
@@ -19,9 +19,14 @@ soloAS 0.2.1 的所有插件支持原版 UE 5.7.4、5.8.4。
 
 ### C++ 工具链
 
-- 使用预编译包时，纯蓝图工程在编辑器内可以直接使用；打包要求见发布说明。
-- Windows 使用源码包需要 C++ 工程和 Visual Studio 工具链，安装后需要编译项目。macOS 使用源码包需通过对应 UE 版本要求的 Xcode 工具链编译；当前仅做有限的编译验证。
-- 项目路径请只使用英文字母、数字和常见符号，避免中文等非英文字符，否则 UE 在编译 C++ 时可能找不到文件。这是 UE 和 Visual Studio 编译器的限制，与 soloAS 无关。
+C++ 工程和 Windows 源码包需要 C++ 工具链。推荐按 UE 官方文档[为虚幻引擎 C++ 项目设置 Visual Studio](https://dev.epicgames.com/documentation/zh-cn/unreal-engine/setting-up-visual-studio-development-environment-for-cplusplus-projects-in-unreal-engine) 安装 Visual Studio 及其要求的组件。
+
+- 使用预编译包时，纯蓝图工程在编辑器内可以直接使用；Win64 打包需要 MSVC 14.44 和 Windows SDK 10.0.22621.0。Windows 源码包需要 C++ 工程，安装后需编译项目；macOS 使用对应 UE 版本要求的 Xcode 工具链，当前仅做有限的编译验证。
+
+暂时无法安装 Visual Studio 时，可以使用 soloAS 0.2.0 起提供的 Windows 托管工具链作为备用，供编辑器发起的编译和打包使用，需启用 **SoloAS Developer Tools** 插件：
+
+- 在 **SoloAS → C++ Toolchain** 菜单安装或卸载托管工具链。工具从微软官方下载，需同意 Microsoft Build Tools 和 Windows SDK 许可；安装在当前用户目录，不影响已有 Visual Studio。
+- 在 **项目设置 → 插件 → SoloAS → C++ Toolchain** 中，默认的 **Auto** 优先使用已安装的 Visual Studio，不可用时才使用托管工具链；**Managed toolchain** 和 **My own toolchain** 分别指定对应工具链。更改后重启编辑器。[项目打包](packaging.md)的打包前检查会报告工具链状态。
 
 ### 代码编辑器
 

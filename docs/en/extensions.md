@@ -99,6 +99,10 @@ int Direction = -1;
 Values.Sort([int Direction](int A, int B) { return Direction * A < Direction * B; });
 ```
 
+## Reclaim removed script classes
+
+After reload, removed script classes with no live instances are reclaimed automatically; classes with live instances are retained.
+
 ## Turn features off as needed
 
 These features are on by default. Plugin defaults are in `Config/Engine.ini`; put project settings in the project's `Config/DefaultEngine.ini`, for example to disable capturing lambdas:
@@ -108,4 +112,4 @@ These features are on by default. Plugin defaults are in `Config/Engine.ini`; pu
 bEnableExplicitCaptureLambda=false
 ```
 
-Script interfaces use the `bEnableScriptInterfaces` switch. Restart the editor and regenerate precompiled caches after changing settings.
+Script interfaces, Blueprint structs, Blueprint inheritance and removed script class reclamation are controlled independently by `bEnableScriptInterfaces`, `bEnableBlueprintStructs`, `bEnableBlueprintInheritance` and `bEnableRemovedScriptClassReclamation`, respectively. Restart the editor and regenerate precompiled caches after changing settings.

@@ -99,6 +99,10 @@ int Direction = -1;
 Values.Sort([int Direction](int A, int B) { return Direction * A < Direction * B; });
 ```
 
+## 删除脚本类的回收
+
+重载后，已删除且没有存活实例的脚本类会自动回收；仍有存活实例的类会保留。
+
 ## 按需关闭功能
 
 启用核心扩展插件后，以上能力默认开启。插件默认配置位于 `Config/Engine.ini`；项目设置写在项目 `Config/DefaultEngine.ini`，例如关闭带捕获的 lambda：
@@ -108,4 +112,4 @@ Values.Sort([int Direction](int A, int B) { return Direction * A < Direction * B
 bEnableExplicitCaptureLambda=false
 ```
 
-脚本接口使用 `bEnableScriptInterfaces` 开关。更改设置后重启编辑器，并重新生成预编译缓存。
+脚本接口、蓝图结构体、蓝图继承和已删除脚本类回收分别由 `bEnableScriptInterfaces`、`bEnableBlueprintStructs`、`bEnableBlueprintInheritance` 和 `bEnableRemovedScriptClassReclamation` 独立控制。更改设置后重启编辑器，并重新生成预编译缓存。

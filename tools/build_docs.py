@@ -20,6 +20,9 @@ ROOT = Path(__file__).resolve().parents[1]
 CONFIG = json.loads((ROOT / 'tools/site_config.json').read_text())
 LANGUAGES = CONFIG['languages']
 CHROME_CSS = (ROOT / 'tools/site-chrome.css').read_text()
+VERSION_HIGHLIGHT_CSS = (
+    '.ver{color:inherit;font-weight:700;font-style:italic}\n'
+)
 PAGES = [
     ('overview', 'About soloAS', '项目介绍'),
     ('requirements', 'Environment setup and quick start', '环境配置与快速上手'),
@@ -78,7 +81,7 @@ DOC_NAV = [
     ('page', 'ue-version-differences', 'Adaptation Differences Across Unreal Engine Versions', '不同 UE 版本的适配差异'),
     ('page', 'api-differences', 'API differences between the latest soloAS and the UE-AS fork', 'soloAS 最新版与 UE-AS fork 的 API 差异'),
     ('page', 'extensions', 'Core extensions', '核心扩展'),
-    ('pending', 'dynamic-modules', 'Feature Mods', '功能模组'),
+    ('page', 'dynamic-modules', 'Feature Mods', '功能模组'),
     ('pending', 'core-manual-bindings', 'Manual binding core', '手工绑定核心'),
     ('pending', 'auto-binding', 'Auto binding', '自动绑定'),
     ('page', 'manual-binding-packs', 'Manual binding packs', '手工绑定包'),
@@ -108,6 +111,40 @@ CATEGORY_LABELS = {
     },
 }
 
+VERSION_NUMBER = r"\d+\.\d+(?:\.\d+)?"
+VERSION_DELIMITER = r"(?:[–—-]|\b(?:to|through|and|or)\b|[,，、和])"
+UE_VERSION_RE = re.compile(
+    rf"(?<![\w])(?:UE|Unreal Engine)\s+{VERSION_NUMBER}"
+    rf"(?:\s*{VERSION_DELIMITER}\s*(?:(?:UE|Unreal Engine)\s+)?{VERSION_NUMBER})*"
+    r"(?![\w]|\.\d)",
+    re.I,
+)
+SOLOAS_VERSION_RE = re.compile(
+    rf"(?<![\w])soloAS\s+v?{VERSION_NUMBER}(?![\w]|\.\d)", re.I
+)
+VERSION_BRANCH_RE = re.compile(r"(?<![\w.])0\.\d+\.x(?![\w.])", re.I)
+VERSION_TAG_RE = re.compile(r"(?<![\w.])v0\.3\.0(?![\w]|\.\d)", re.I)
+CHANGELOG_VERSION_RE = re.compile(
+    rf"(?<![\w.]){VERSION_NUMBER}\s+·\s+(?:UE|Unreal Engine)\s+{VERSION_NUMBER}"
+    rf"(?:\s*(?:[–—-]|\b(?:to|through|and|or)\b|[,，、])\s*{VERSION_NUMBER})*"
+    r"(?![\w]|\.\d)",
+    re.I,
+)
+VERSION_TABLE_CELL_RE = re.compile(
+    r"\s*5\.[4-8](?:\.\d+)?"
+    r"(?:\s*(?:[–—-]|\b(?:to|through|and|or)\b|[,，、])\s*5\.[4-8](?:\.\d+)?)*\s*",
+    re.I,
+)
+URL_RE = re.compile(r"(?i)\b(?:https?|ftp|mailto):[^\s<>()]+")
+VERSION_SPAN_RE = re.compile(r'<span class="ver">.*?</span>')
+RAW_HTML_TAG_RE = re.compile(r"(?s)<!--.*?-->|<![^>]*>|</?[A-Za-z][^>]*>")
+RAW_HTML_CODE_RE = re.compile(r"(?is)<(pre|code|title|script|style)\b[^>]*>.*?</\1\s*>")
+HTML_PROTECTED_TAGS = {"code", "pre", "title", "script", "style"}
+HTML_VOID_TAGS = {
+    "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+    "meta", "param", "source", "track", "wbr",
+}
+
 
 def slug(text):
     text = re.sub(r'[`*_]', '', text).lower()
@@ -115,7 +152,68 @@ def slug(text):
     return re.sub(r'\s+', '-', text.strip())
 
 
-def inline(source, tokens=None):
+def mark_versions(source, version_cell=False):
+    """Wrap only known SoloAS/Unreal version forms in visible source text."""
+    candidates = []
+    for priority, pattern in enumerate((
+        UE_VERSION_RE,
+        SOLOAS_VERSION_RE,
+        VERSION_BRANCH_RE,
+        VERSION_TAG_RE,
+        CHANGELOG_VERSION_RE,
+    )):
+        candidates.extend((match.start(), match.end(), priority) for match in pattern.finditer(source))
+    if version_cell and VERSION_TABLE_CELL_RE.fullmatch(source):
+        candidates.append((0, len(source), 10))
+
+    urls = [match.span() for match in URL_RE.finditer(source)]
+    chosen = []
+    for start, end, priority in sorted(candidates, key=lambda item: (-(item[1] - item[0]), -item[2], item[0])):
+        if any(start < url_end and end > url_start for url_start, url_end in urls):
+            continue
+        if any(start < chosen_end and end > chosen_start for chosen_start, chosen_end in chosen):
+            continue
+        chosen.append((start, end))
+    if not chosen:
+        return source
+
+    parts = []
+    cursor = 0
+    for start, end in sorted(chosen):
+        parts.append(source[cursor:start])
+        parts.append('<span class="ver">' + source[start:end] + '</span>')
+        cursor = end
+    parts.append(source[cursor:])
+    return ''.join(parts)
+
+
+def mark_html_text(source):
+    """Apply version spans to HTML text nodes while preserving markup verbatim."""
+    parts, protected = [], []
+    cursor = 0
+    for match in RAW_HTML_TAG_RE.finditer(source):
+        text = source[cursor:match.start()]
+        parts.append(text if any(tag in HTML_PROTECTED_TAGS for tag in protected) else mark_versions(text))
+        tag = match.group(0)
+        parts.append(tag)
+        tag_match = re.match(r"<\s*(/?)\s*([A-Za-z][\w:-]*)", tag)
+        if tag_match:
+            closing, name = tag_match.groups()
+            name = name.lower()
+            if closing:
+                for index in range(len(protected) - 1, -1, -1):
+                    if protected[index] == name:
+                        del protected[index:]
+                        break
+            elif name not in HTML_VOID_TAGS and not tag.rstrip().endswith('/>'):
+                protected.append(name)
+        cursor = match.end()
+    text = source[cursor:]
+    parts.append(text if any(tag in HTML_PROTECTED_TAGS for tag in protected) else mark_versions(text))
+    return ''.join(parts)
+
+
+def inline(source, tokens=None, mark_version_text=True, version_cell=False):
     if tokens is None:
         tokens = []
 
@@ -138,16 +236,22 @@ def inline(source, tokens=None):
         if re.match(r'(?i)(?:javascript|data|vbscript):', url):
             raise ValueError('Unsafe Markdown URL')
         url = re.sub(r'\.md(?=#|$)', '.html', url)
-        return keep(f'<a href="{html.escape(url, quote=True)}">{inline(label, tokens)}</a>')
+        return keep(f'<a href="{html.escape(url, quote=True)}">{inline(label, tokens, mark_version_text, version_cell)}</a>')
 
     source = re.sub(r'\[([^\]]+)\]\(([^\s)]+)\)', link, source)
+    source = RAW_HTML_CODE_RE.sub(lambda m: keep(html.escape(m[0])), source)
+    source = RAW_HTML_TAG_RE.sub(lambda m: keep(html.escape(m[0])), source)
+    source = URL_RE.sub(lambda m: keep(html.escape(m[0])), source)
+    if mark_version_text:
+        source = mark_versions(source, version_cell=version_cell)
+        source = VERSION_SPAN_RE.sub(lambda m: keep(m[0]), source)
     source = html.escape(source)
     source = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', source)
     source = re.sub(r'(?<!\*)\*([^*]+)\*(?!\*)', r'<em>\1</em>', source)
     return re.sub(r'\x00(\d+)\x00', lambda m: tokens[int(m[1])], source)
 
 
-def render(source):
+def render(source, mark_version_text=True, version_table=False):
     # HTML comments are source metadata and never appear in the built pages.
     source = re.sub(r'<!--[\s\S]*?-->', '', source)
     lines = source.splitlines()
@@ -190,12 +294,13 @@ def render(source):
             anchors[anchor] = count + 1
             if count:
                 anchor += f'-{count}'
-            output.append(f'<h{level} id="{anchor}">{inline(label)}<a class="anchor" href="#{anchor}" aria-label="Permalink">#</a></h{level}>')
-            if level == 2 or (level == 1 and len(anchors) > 1):
-                toc.append(f'<a href="#{anchor}">{inline(label)}</a>')
+            output.append(f'<h{level} id="{anchor}">{inline(label, mark_version_text=mark_version_text)}<a class="anchor" href="#{anchor}" aria-label="Permalink">#</a></h{level}>')
+            if level in (2, 3):
+                toc.append(f'<a class="toc-h{level}" href="#{anchor}">{inline(label, mark_version_text=mark_version_text)}</a>')
         elif i + 1 < len(lines) and '|' in line and re.match(r'^\s*\|?\s*:?-{3,}', lines[i + 1]):
             def cells(row):
-                return [inline(c.strip()) for c in row.strip().strip('|').split('|')]
+                return [inline(c.strip(), mark_version_text=mark_version_text, version_cell=version_table)
+                        for c in row.strip().strip('|').split('|')]
             heads = cells(line)
             output.append('<div class="table-wrap"><table><thead><tr>' + ''.join('<th scope="col">' + c + '</th>' for c in heads) + '</tr></thead><tbody>')
             i += 2
@@ -219,11 +324,11 @@ def render(source):
                 while i < len(lines) and lines[i].startswith('  ') and lines[i].strip() and not re.match(r'^\s*(?:[-+*]|\d+\.)\s', lines[i]) and not re.match(r'^ {0,3}```', lines[i]):
                     text.append(lines[i].strip())
                     i += 1
-                output.append('<li>' + inline(' '.join(text)) + '</li>')
+                output.append('<li>' + inline(' '.join(text), mark_version_text=mark_version_text) + '</li>')
             output.append(f'</{tag}>')
             continue
         elif line.startswith('> 注：') or line.startswith('> Note: '):
-            output.append('<p class="doc-aside">' + inline(line[2:]) + '</p>')
+            output.append('<p class="doc-aside">' + inline(line[2:], mark_version_text=mark_version_text) + '</p>')
             i += 1
         elif line in ('> **soloAS 注**', '> **soloAS note**'):
             label = line[4:-2]
@@ -232,10 +337,10 @@ def render(source):
             while i < len(lines) and lines[i].startswith('> '):
                 note.append(lines[i][2:])
                 i += 1
-            output.append('<aside class="soloas-note" aria-label="' + html.escape(label) + '"><span class="soloas-note-label">' + html.escape(label) + '</span><p>' + inline(' '.join(note)) + '</p></aside>')
+            output.append('<aside class="soloas-note" aria-label="' + html.escape(label) + '"><span class="soloas-note-label">' + html.escape(label) + '</span><p>' + inline(' '.join(note), mark_version_text=mark_version_text) + '</p></aside>')
             continue
         elif line.startswith('> '):
-            output.append('<blockquote><p>' + inline(line[2:]) + '</p></blockquote>')
+            output.append('<blockquote><p>' + inline(line[2:], mark_version_text=mark_version_text) + '</p></blockquote>')
         elif re.match(r'^\s*(?:---+|\*\*\*+)\s*$', line):
             output.append('<hr>')
         else:
@@ -244,7 +349,7 @@ def render(source):
             while i < len(lines) and lines[i].strip() and not re.match(r'^(?:#|```|>|\s*[-+*]\s|\s*\d+\.\s)', lines[i]):
                 paragraph.append(lines[i])
                 i += 1
-            output.append('<p>' + inline(' '.join(paragraph)) + '</p>')
+            output.append('<p>' + inline(' '.join(paragraph), mark_version_text=mark_version_text) + '</p>')
             continue
         i += 1
     return '\n'.join(output), '\n'.join(toc)
@@ -497,6 +602,24 @@ def pager_html(lang, name, seq_of, titles):
 
 def main():
     template = (ROOT / 'docs/template.html').read_text()
+    template = template.replace('<aside class="sidebar">{{nav_desktop}}<nav class="page-toc" aria-label="{{on_page}}"><div class="nav-title">{{on_page}}</div>{{toc}}</nav></aside><main class="document" id="main" tabindex="-1">{{content}}</main>', '<main class="document" id="main" tabindex="-1">{{content}}</main><nav class="page-toc" aria-label="{{on_page}}"><div class="nav-title">{{on_page}}</div>{{toc}}</nav>')
+    template = template.replace('{{menu}} <span aria-hidden="true">≡</span>', '<span class="menu-narrow">{{menu}}</span><span class="menu-wide">{{all_docs}}</span> <span aria-hidden="true">≡</span>')
+    template = template.replace('<h3>{{page_list}}</h3><div>{{nav_mobile}}</div>\n<h3>{{on_page}}</h3><nav class="contents-sections" aria-label="{{on_page}}">{{toc}}</nav>', '<section class="contents-page"><h3>{{on_page}}</h3><nav class="contents-sections" aria-label="{{on_page}}">{{toc}}</nav></section>\n<h3>{{all_docs}}</h3><div>{{nav_mobile}}</div>')
+    template = template.replace("  narrow.addEventListener('change', () => { if (dialog.open && !narrow.matches) dialog.close(); });", "")
+    template = template.replace('</body>', """<script>
+(() => {
+  const links = Array.from(document.querySelectorAll('.layout .page-toc a'));
+  const headings = links.map(link => document.getElementById(decodeURIComponent(link.hash.slice(1))));
+  if (!links.length) return;
+  function update() {
+    let active = 0;
+    headings.forEach((heading, i) => { if (heading && heading.getBoundingClientRect().top <= 140) active = i; });
+    links.forEach((link, i) => { if (i === active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current'); });
+  }
+  window.addEventListener('scroll', update, {passive:true});
+  update();
+})();
+</script></body>""")
     homepage = (ROOT / 'index.html').read_text()
     # Keep visual tokens in sync with the homepage, without copying its layout.
     tokens = re.search(r':root\{([^}]+)\}', homepage)
@@ -548,7 +671,11 @@ def main():
         for name, title, source in entries:
             target = ROOT / 'site/docs' / lang / (name + '.html')
             target.parent.mkdir(parents=True, exist_ok=True)
-            body, toc = render(source)
+            body, toc = render(
+                source,
+                mark_version_text=not name.startswith('learn/'),
+                version_table=name in {'requirements', 'ue-version-differences'},
+            )
             if name == 'ue-version-differences':
                 body = re.sub(r'(<h2 id="[^"]+">.*?)(?=<h2 id=|$)',
                               r'<section class="version-section">\1</section>', body, flags=re.S)
@@ -556,22 +683,22 @@ def main():
             depth = len(Path(name).parts) - 1
             prefix = '../' * depth
             nav = navigation(lang, name, learning)
-            values = dict(suffix='soloAS docs' if lang == 'en' else 'soloAS 文档', tokens=tokens[1], lang=next(item['tag'] for item in LANGUAGES if item['key'] == lang), title=html.escape(title), nav_desktop=nav, nav_mobile=nav, content=body, toc=toc, navigation='Documentation' if lang == 'en' else '使用文档', menu='Contents' if lang == 'en' else '目录', close='Close' if lang == 'en' else '关闭', page_list='Pages' if lang == 'en' else '页面列表', on_page='On this page' if lang == 'en' else '本页目录', skip='Skip to content' if lang == 'en' else '跳至正文', home=prefix + ('../../index.html' if lang == 'en' else '../../zh/index.html'), favicon=prefix + '../../favicon.svg', favicon_ico=prefix + '../../favicon.ico', apple_touch_icon=prefix + '../../apple-touch-icon.png')
+            values = dict(suffix='soloAS docs' if lang == 'en' else 'soloAS 文档', tokens=tokens[1], lang=next(item['tag'] for item in LANGUAGES if item['key'] == lang), title=html.escape(title), nav_desktop=nav, nav_mobile=nav, content=body, toc=toc, navigation='Documentation' if lang == 'en' else '使用文档', menu='Contents' if lang == 'en' else '目录', close='Close' if lang == 'en' else '关闭', page_list='Pages' if lang == 'en' else '页面列表', all_docs='All docs' if lang == 'en' else '全部文档', on_page='On this page' if lang == 'en' else '本页目录', skip='Skip to content' if lang == 'en' else '跳至正文', home=prefix + ('../../index.html' if lang == 'en' else '../../zh/index.html'), favicon=prefix + '../../favicon.svg', favicon_ico=prefix + '../../favicon.ico', apple_touch_icon=prefix + '../../apple-touch-icon.png')
             paths = {item['key']: f'/docs/{item["key"]}/{name}.html' for item in LANGUAGES}
             for item in LANGUAGES:
                 if name.startswith('learn/') and name != 'learn/index' and not (ROOT / 'docs' / item['key'] / (name + '.md')).exists():
                     paths[item['key']] = f'/docs/{item["key"]}/learn/index.html'
             values.update(header=header(lang, paths), footer=footer(lang), alternates=alternates(paths), chrome_css=CHROME_CSS)
             page = re.sub(r'\{\{(\w+)\}\}', lambda m: values[m[1]], template)
+            if not toc:
+                page = re.sub(r'<nav class="page-toc".*?</nav>', '', page, flags=re.S)
+                page = re.sub(r'<section class="contents-page">.*?</section>', '', page, flags=re.S)
             if name == 'ue-version-differences':
                 page = page.replace('</style>', '.version-section{border-left:4px solid var(--paper-line);background:var(--paper);color:var(--ink);padding:1px 20px 20px;margin:32px 0}.version-section h2{margin-top:20px}</style>', 1)
-            if name == 'license':
-                page = page.replace('class="layout"', 'class="layout" style="display:block;max-width:1000px"')
-                page = re.sub(r'<aside class="sidebar">.*?</aside>', '', page, flags=re.S)
-                page = re.sub(r'<nav class="toc".*?</nav>', '', page, flags=re.S)
-                page = re.sub(r'<button class="contents-button".*?</script>', '', page, flags=re.S)
             if name in PENDING_PAGES:
                 page = page.replace('</head>', '<meta name="robots" content="noindex">\n</head>', 1)
+            if 'class="ver"' not in body or name.startswith('learn/'):
+                page = page.replace(VERSION_HIGHLIGHT_CSS, '', 1)
             target.write_text(secure_external_links(page))
             built += 1
     if (ROOT / 'docs/assets').is_dir():
@@ -584,6 +711,9 @@ def main():
         template = source.read_text()
         template = re.sub(r'<p class="start-note">.*?</p>', ('<p class="start-note">支持的版本见<a href="/docs/zh/requirements.html">环境配置</a>。</p>' if lang == 'zh' else '<p class="start-note">See <a href="/docs/en/requirements.html">environment setup</a> for supported versions.</p>'), template, count=1)
         page = re.sub(r'\{\{(\w+)\}\}', lambda m: values[m[1]], template)
+        page = mark_html_text(page)
+        if 'class="ver"' not in page:
+            page = page.replace(VERSION_HIGHLIGHT_CSS, '', 1)
         target = ROOT / 'site' / item['home'].lstrip('/') / 'index.html'
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(secure_external_links(page))

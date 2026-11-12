@@ -5,7 +5,7 @@
 ### Engine version
 
 <!-- generated-engine-support:start -->
-All soloAS 0.2.1 plugins support stock Unreal Engine 5.7.4 and 5.8.4.
+All soloAS 0.3.0 plugins support stock Unreal Engine 5.7.4 and 5.8.4.
 <!-- generated-engine-support:end -->
 
 If you use UE 5.4–5.6, please use [0.1.x](changelog.md).
@@ -19,9 +19,14 @@ See [Adaptation Differences Across Unreal Engine Versions](ue-version-difference
 
 ### C++ toolchain
 
-- With the prebuilt package, a Blueprint-only project can use it directly in the editor; see the release notes for packaging requirements.
-- On Windows, the source package needs a C++ project and the Visual Studio toolchain, and the project must be compiled after installing. On macOS, use the Xcode toolchain required by the corresponding UE version; verification is limited to compilation.
-- Use only English letters, numbers and common symbols in project paths. Avoid Chinese and other non-English characters, or Unreal Engine may fail to find files when compiling C++; this is an Unreal Engine and Visual Studio compiler limitation, unrelated to soloAS.
+C++ projects and the Windows source package need a C++ toolchain. We recommend installing Visual Studio and the components it requires by following the UE documentation [Setting Up Visual Studio for C++ Projects in Unreal Engine](https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-visual-studio-development-environment-for-cplusplus-projects-in-unreal-engine).
+
+- With the prebuilt package, a Blueprint-only project can use it directly in the editor; Win64 packaging requires MSVC 14.44 and Windows SDK 10.0.22621.0. On Windows, the source package needs a C++ project, and the project must be compiled after installation. On macOS, use the Xcode toolchain required by the corresponding UE version; verification is limited to compilation.
+
+If you cannot install Visual Studio for now, the managed Windows toolchain available since soloAS 0.2.0 can serve as a fallback for compilation and packaging launched from the editor. The **SoloAS Developer Tools** plugin must be enabled:
+
+- Install or uninstall the managed toolchain from **SoloAS → C++ Toolchain**. The tools are downloaded from Microsoft and require acceptance of the Microsoft Build Tools and Windows SDK licenses; they are installed in the current user's directory without affecting an existing Visual Studio installation.
+- Under **Project Settings → Plugins → SoloAS → C++ Toolchain**, the default **Auto** uses your installed Visual Studio first and falls back to the managed toolchain only when it is unavailable; **Managed toolchain** and **My own toolchain** select the corresponding toolchain. Restart the editor after changing the selection. The [packaging](packaging.md) precheck reports toolchain status.
 
 ### Code editor
 

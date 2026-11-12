@@ -23,6 +23,10 @@ See [Packaging](packaging.md) and [AI-assisted development](ai-assisted.md).
 - **Command-line and CI packaging**: check and run packaging with the bundled script, using the same project settings as the editor.
 - **AI-assisted development via MCP**: AI can read script types and project information, help with packaging, and debug scripts through MCP.
 
+## Feature Mods
+
+[Feature Mods](dynamic-modules.md) can be loaded, unloaded and updated independently, and distributed with a project or installed externally.
+
 ## Upcoming features
 
-Feature Mods, the manual binding core, auto binding and additional manual binding packs are coming soon; see the [roadmap](/#roadmap).
+The manual binding core, auto binding and additional manual binding packs are coming soon; see the [roadmap](/#roadmap).
